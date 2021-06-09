@@ -10,68 +10,32 @@ import { projectInstall } from "pkg-install";
 const fileExists = promisify(access);
 const copy = promisify(ncp);
 
-const copy_project = async (options) => {
-  //Usamos para copiar
-  console.log(options);
-  return copy(options.templatePath, options.projectPath, {
-    clobber: false,
-  });
-};
+export const createProject = async (nombreProyecto, pathProject, type) => {
+  // console.log(nombreProyecto);
+  //Obtenemos la ruta del template
+  let copyTemplatePath = path.resolve(
+    new URL(import.meta.url).pathname,
+    "../../templates/javascript",
+    type
+  );
 
-//init -> Inicializamos un Proyecto.
-export const initProject = async (options) => {
-  let defaultType = "commonjs";
-  //Si se pudo pasar el argumento init creamos un nuevo Proyecto.
-  if (options.init) {
-    //Definimos las nuevas opciones, agregando el origen del archivo
-    const new_options = {
-      ...options,
-      projectPath: options.projectPath || process.cwd(),
-      defaultType: options.defaultType || defaultType,
-    };
-    console.log(new_options);
+  let finalPathProject = path.resolve(pathProject, nombreProyecto);
+  console.log(finalPathProject);
 
-    //Obtenemos la ruta actual
-    const currentFileUrl = import.meta.url;
-
-    let structurePath = "";
-
-    switch (new_options.defaultType.toLowerCase()) {
-      case "esm":
-        structurePath = "../../templates/javascript/es6";
-        break;
-      case "commonjs":
-        structurePath = "../../templates/javascript/commonjs";
-        break;
-
-      default:
-        break;
-    }
-
-    const templatePath = path.resolve(
-      new URL(currentFileUrl).pathname,
-      structurePath
-    );
-
-    new_options["templatePath"] = templatePath;
-
-    try {
-      await fileExists(templatePath, constants.R_OK);
-    } catch (error) {
-      console.error("%s NO existe el Template", chalk.red.bold("ERROR"));
-      process.exit(1);
-    }
+  try {
+    //Verificamos si existe la ruta
+    await verifTemplate(copyTemplatePath);
 
     const tasks = new Listr([
       {
         title: "Copiar la Estructura del Proyecto.",
-        task: () => copy_project(new_options),
+        task: () => copy_project_structure(finalPathProject, copyTemplatePath),
       },
       {
         title: "Instalar Todas las Dependencias.",
         task: () =>
           projectInstall({
-            cwd: new_options.projectPath,
+            cwd: finalPathProject,
           }),
       },
     ]);
@@ -79,6 +43,23 @@ export const initProject = async (options) => {
     await tasks.run();
 
     console.log("%s Project ready", chalk.green.bold("DONE"));
-    return true;
+  } catch (error) {
+    console.error(error);
   }
+};
+
+async function verifTemplate(copyTemplatePath) {
+  try {
+    await fileExists(copyTemplatePath, constants.R_OK);
+  } catch (error) {
+    console.error("%s NO existe el Template", chalk.red.bold("ERROR"));
+    process.exit(1);
+  }
+}
+
+const copy_project_structure = async (pathProject, templatePathProject) => {
+  //Usamos para copiar
+  return copy(templatePathProject, pathProject, {
+    clobber: false,
+  });
 };

@@ -1,57 +1,51 @@
 import arg from "arg";
 import inquirer from "inquirer";
-import { initProject } from "./index.js";
 
-//Procesamos los Argumentos
-//Aca recibimos todos los argumentos que el desarollador pasa por el terminal
-const processArguments = (argsInput) => {
-  const args = arg(
-    {},
-    {
-      argv: argsInput.slice(2),
-    }
-  );
+import { yargsArguments } from "./config/yargs_config.js";
 
-  return {
-    init: args._[0],
-  };
-};
+import { createProject } from "./index.js";
 
-//Manejamos parametro que no se paso.
-const missingArguments = async (options) => {
-  const preguntas = [];
+const yargsCommand = async () => {
+  //Obtenemos el comando
+  let comando = yargsArguments._[0];
+  let currentPath = process.cwd();
 
-  //Si se paso el init Para la inicializacion
+  switch (comando) {
+    case "new":
+      if (yargsArguments._[1]) {
+        let nombreProyecto = yargsArguments._[1];
+        try {
+          //El usuario selecciona el type del proyecto
+          let respuestaType = await inquirer.prompt([
+            {
+              type: "list",
+              name: "type",
+              message: "Que Tipo de Proyecto Usaras?",
+              choices: ["COMMONJS", "ESM"],
+              default: "COMMONJS",
+            },
+          ]);
+          //Creamos la estructura del proyecto
+          await createProject(
+            nombreProyecto,
+            currentPath,
+            respuestaType.type.toLowerCase()
+          );
+        } catch (error) {
+          console.log(error);
+        }
+      }
 
-  preguntas.push({
-    type: "list",
-    name: "init",
-    choices: ["ESM", "COMMONJS"],
-    default: "COMMONJS",
-    message: "Con cual deseas iniciar un proyecto?",
-  });
+      break;
+    case "add":
+      break;
 
-  // if (!options.git) {
-  //   preguntas.push({
-  //     type: "confirm",
-  //     name: "git",
-  //     message: "Deseas Inicializar un Repositorio de Git?",
-  //     default: false,
-  //   });
-  // }
-
-  const respuesta = await inquirer.prompt(preguntas);
-
-  return {
-    ...options,
-    init: options.init || respuesta.init,
-  };
+    default:
+      break;
+  }
+  console.log(comando);
 };
 
 export const cli = async (args) => {
-  let op = processArguments(args);
-  op = await missingArguments(op);
-  console.log(op);
-  await initProject(op);
-  // console.log(op);
+  yargsCommand();
 };
