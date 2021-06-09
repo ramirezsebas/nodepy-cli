@@ -52,7 +52,10 @@ async function verifTemplate(copyTemplatePath) {
   try {
     await fileExists(copyTemplatePath, constants.R_OK);
   } catch (error) {
-    console.error("%s NO existe el Template", chalk.red.bold("ERROR"));
+    console.error(
+      `%s NO existe el Template ${copyTemplatePath}`,
+      chalk.red.bold("ERROR")
+    );
     process.exit(1);
   }
 }

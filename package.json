@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "bin": {
     "@sebas369/nodepy": "bin/nodepy",
-    "create-project": "bin/nodepy"
+    "nodepy": "bin/nodepy"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
