@@ -1,14 +1,11 @@
 {
   "name": "@sebas369/nodepy",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "CLI para Node JS",
   "main": "src/index.js",
   "bin": {
     "@sebas369/nodepy": "bin/nodepy",
     "nodepy": "bin/nodepy"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "CLI",
