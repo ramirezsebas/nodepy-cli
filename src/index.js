@@ -3,7 +3,6 @@ import ncp from "ncp";
 import path from "path";
 import { access, constants } from "fs";
 import { promisify } from "util";
-import execa from "execa";
 import Listr from "listr";
 import { projectInstall } from "pkg-install";
 
@@ -11,19 +10,16 @@ const fileExists = promisify(access);
 const copy = promisify(ncp);
 
 export const createProject = async (nombreProyecto, pathProject, type) => {
-  // console.log(nombreProyecto);
   //Obtenemos la ruta del template
-  console.log(process.platform);
-  let copyTemplatePath = path.resolve(
-    new URL(import.meta.url).pathname,
-    process.platform === "win32"
-      ? "..\\..\\templates/javascript"
-      : "../../templates/javascript",
+  const currentUrl = new URL(import.meta.url).pathname;
+
+  let copyTemplatePath = path.join(
+    process.platform === "win32" ? currentUrl.substring(1) : currentUrl,
+    "../../templates/javascript",
     type
   );
 
   let finalPathProject = path.resolve(pathProject, nombreProyecto);
-  console.log(finalPathProject);
 
   try {
     //Verificamos si existe la ruta
@@ -45,7 +41,10 @@ export const createProject = async (nombreProyecto, pathProject, type) => {
 
     await tasks.run();
 
-    console.log("%s Project ready", chalk.green.bold("DONE"));
+    console.log(
+      `%s Se ha creado el Proyecto ${nombreProyecto}`,
+      chalk.green.bold("DONE")
+    );
   } catch (error) {
     console.error(error);
   }
