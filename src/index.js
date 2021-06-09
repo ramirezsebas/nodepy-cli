@@ -20,21 +20,37 @@ const copy_project = async (options) => {
 
 //init -> Inicializamos un Proyecto.
 export const initProject = async (options) => {
+  let defaultType = "commonjs";
   //Si se pudo pasar el argumento init creamos un nuevo Proyecto.
   if (options.init) {
     //Definimos las nuevas opciones, agregando el origen del archivo
     const new_options = {
       ...options,
       projectPath: options.projectPath || process.cwd(),
+      defaultType: options.defaultType || defaultType,
     };
     console.log(new_options);
 
     //Obtenemos la ruta actual
     const currentFileUrl = import.meta.url;
 
+    let structurePath = "";
+
+    switch (new_options.defaultType.toLowerCase()) {
+      case "esm":
+        structurePath = "../../templates/javascript/es6";
+        break;
+      case "commonjs":
+        structurePath = "../../templates/javascript/commonjs";
+        break;
+
+      default:
+        break;
+    }
+
     const templatePath = path.resolve(
       new URL(currentFileUrl).pathname,
-      "../../templates/javascript"
+      structurePath
     );
 
     new_options["templatePath"] = templatePath;

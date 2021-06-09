@@ -1,10 +1,10 @@
 import arg from "arg";
 import inquirer from "inquirer";
-import { initProject } from ".";
+import { initProject } from "./index.js";
 
 //Procesamos los Argumentos
+//Aca recibimos todos los argumentos que el desarollador pasa por el terminal
 const processArguments = (argsInput) => {
-  //Argumentos
   const args = arg(
     {},
     {
@@ -22,13 +22,14 @@ const missingArguments = async (options) => {
   const preguntas = [];
 
   //Si se paso el init Para la inicializacion
-  if (!options.init) {
-    preguntas.push({
-      type: "confirm",
-      name: "init",
-      message: "Deseas Inicializar un Nuevo Proyecto?",
-    });
-  }
+
+  preguntas.push({
+    type: "list",
+    name: "init",
+    choices: ["ESM", "COMMONJS"],
+    default: "COMMONJS",
+    message: "Con cual deseas iniciar un proyecto?",
+  });
 
   // if (!options.git) {
   //   preguntas.push({
@@ -41,18 +42,16 @@ const missingArguments = async (options) => {
 
   const respuesta = await inquirer.prompt(preguntas);
 
-  const esInit =
-    options.init && options.init.toLowerCase() === "init" ? true : false;
-
   return {
     ...options,
-    init: esInit ? true : false || respuesta.init,
+    init: options.init || respuesta.init,
   };
 };
 
 export const cli = async (args) => {
   let op = processArguments(args);
   op = await missingArguments(op);
-  await initProject(op);
   console.log(op);
+  await initProject(op);
+  // console.log(op);
 };
