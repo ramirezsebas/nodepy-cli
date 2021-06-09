@@ -1,5 +1,6 @@
 import arg from "arg";
 import inquirer from "inquirer";
+import { initProject } from ".";
 
 //Procesamos los Argumentos
 const processArguments = (argsInput) => {
@@ -52,6 +53,6 @@ const missingArguments = async (options) => {
 export const cli = async (args) => {
   let op = processArguments(args);
   op = await missingArguments(op);
-
+  await initProject(op);
   console.log(op);
 };
