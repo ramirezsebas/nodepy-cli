@@ -13,9 +13,12 @@ const copy = promisify(ncp);
 export const createProject = async (nombreProyecto, pathProject, type) => {
   // console.log(nombreProyecto);
   //Obtenemos la ruta del template
+  console.log(process.platform);
   let copyTemplatePath = path.resolve(
     new URL(import.meta.url).pathname,
-    "../../templates/javascript",
+    process.platform === "win32"
+      ? "..\\..\\templates/javascript"
+      : "../../templates/javascript",
     type
   );
 
@@ -50,6 +53,7 @@ export const createProject = async (nombreProyecto, pathProject, type) => {
 
 async function verifTemplate(copyTemplatePath) {
   try {
+    console.log(copyTemplatePath);
     await fileExists(copyTemplatePath, constants.R_OK);
   } catch (error) {
     console.error(
