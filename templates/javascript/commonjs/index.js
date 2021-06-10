@@ -1,1 +1,3 @@
-console.log("Hola Mundo");
+const server = require("./src/server");
+
+server.createHttpServer();

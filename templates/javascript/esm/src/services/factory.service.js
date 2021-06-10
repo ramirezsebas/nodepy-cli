@@ -16,4 +16,4 @@ const factoryService = new FactoryService();
 
 Object.freeze(factoryService);
 
-module.exports = factoryService;
+export default factoryService;

@@ -1,1 +1,3 @@
-console.log("Hola Mundo");
+import server from "./src/server.js";
+
+server.createHttpServer();
