@@ -74,10 +74,13 @@ export const createProject = async (nombreProyecto, pathProject, type) => {
 };
 
 const db_choice = async (db) => {
+  const dbDependencies = {
+    sequelize: "^6.6.2",
+  };
   switch (db.toLowerCase()) {
     case "postgres":
       await install({
-        sequelize: "^6.6.2",
+        ...dbDependencies,
         pg: "^8.6.0",
         "pg-hstore": "^2.3.3",
       });
@@ -86,7 +89,7 @@ const db_choice = async (db) => {
 
     case "mysql":
       await install({
-        sequelize: "^6.6.2",
+        ...dbDependencies,
         mysql2: "^2.2.5",
       });
 
@@ -94,7 +97,7 @@ const db_choice = async (db) => {
 
     case "mariadb":
       await install({
-        sequelize: "^6.6.2",
+        ...dbDependencies,
         mariadb: "^2.5.3",
       });
 
@@ -102,16 +105,23 @@ const db_choice = async (db) => {
 
     case "sqlite":
       await install({
-        sequelize: "^6.6.2",
-        sqlite3: "^2.5.3",
+        ...dbDependencies,
+        sqlite3: "^5.0.2",
       });
 
       break;
 
     case "sql server":
       await install({
-        sequelize: "^6.6.2",
+        ...dbDependencies,
         tedious: "^11.0.9",
+      });
+
+      break;
+    case "mongodb":
+      await install({
+        mongodb: "^3.6.9",
+        mongoose: "^5.12.13",
       });
 
       break;
