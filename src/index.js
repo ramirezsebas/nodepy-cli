@@ -57,7 +57,7 @@ export const createProject = async (nombreProyecto, pathProject, type) => {
       },
       {
         title: "Instalar las Dependencias de la Base de Datos Seleccionado.",
-        task: () => db_choice(selectDb.db),
+        task: () => db_choice(selectDb.db, finalPathProject),
       },
     ]);
 
@@ -72,61 +72,86 @@ export const createProject = async (nombreProyecto, pathProject, type) => {
   }
 };
 
-const db_choice = async (db) => {
+const db_choice = async (db, finalPathProject) => {
   const dbDependencies = {
     sequelize: "^6.6.2",
   };
-  switch (db.toLowerCase()) {
-    case "postgres":
-      await install({
-        ...dbDependencies,
-        pg: "^8.6.0",
-        "pg-hstore": "^2.3.3",
-      });
+  const option = {
+    cwd: finalPathProject,
+  };
+  try {
+    switch (db.toLowerCase()) {
+      case "postgres":
+        let a = await install(
+          {
+            ...dbDependencies,
+            pg: "^8.6.0",
+            "pg-hstore": "^2.3.3",
+          },
+          option
+        );
+        console.log(a);
+        break;
 
-      break;
+      case "mysql":
+        await install(
+          {
+            ...dbDependencies,
+            mysql2: "^2.2.5",
+          },
+          option
+        );
 
-    case "mysql":
-      await install({
-        ...dbDependencies,
-        mysql2: "^2.2.5",
-      });
+        break;
 
-      break;
+      case "mariadb":
+        await install(
+          {
+            ...dbDependencies,
+            mariadb: "^2.5.3",
+          },
+          option
+        );
 
-    case "mariadb":
-      await install({
-        ...dbDependencies,
-        mariadb: "^2.5.3",
-      });
+        break;
 
-      break;
+      case "sqlite":
+        await install(
+          {
+            ...dbDependencies,
+            sqlite3: "^5.0.2",
+          },
+          option
+        );
 
-    case "sqlite":
-      await install({
-        ...dbDependencies,
-        sqlite3: "^5.0.2",
-      });
+        break;
 
-      break;
+      case "sql server":
+        await install(
+          {
+            ...dbDependencies,
+            tedious: "^11.0.9",
+          },
+          option
+        );
 
-    case "sql server":
-      await install({
-        ...dbDependencies,
-        tedious: "^11.0.9",
-      });
+        break;
+      case "mongodb":
+        await install(
+          {
+            mongodb: "^3.6.9",
+            mongoose: "^5.12.13",
+          },
+          option
+        );
 
-      break;
-    case "mongodb":
-      await install({
-        mongodb: "^3.6.9",
-        mongoose: "^5.12.13",
-      });
+        break;
 
-      break;
-
-    default:
-      break;
+      default:
+        break;
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
 
