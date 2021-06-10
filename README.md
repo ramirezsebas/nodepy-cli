@@ -1,14 +1,45 @@
-# Node JS CLI (En Proceso)
+# Node JS CLI
 
-## Instalacion
+CLI that generates the structure of a Node JS project with Express.
+
+Soportes Relational Database with the ORM Sequelize:
+
+- Postgres
+- Mysql
+- Sql Server
+- MariaDB
+- Sqlite
+
+Soportes Non Relational Database with the ORM Sequelize
+
+- MongoDB
+
+---
+
+Un CLI que permite al desarollador generar una estructura base de un proyecto en Node JS con express.
+
+Soporta Base de Datos Relacionales con el ORM Sequelize:
+
+- Postgres
+- Mysql
+- Sql Server
+- MariaDB
+- Sqlite
+
+Soporta Base de Datos No Relacionales con el ORM Mongose:
+
+- MongoDB
+
+## Instalacion - Instalation
 
 ```bash
-//Instalar de manera Global
+//Instalar de Manera Global
+//Install Package Globally
 npm i -g @sebas369/nodepy
 
 ```
 
-## Estructura de un Proyecto
+## Estructura de un Proyecto - Project Structure
 
 ```bash
 - public
@@ -33,9 +64,11 @@ npm i -g @sebas369/nodepy
 - .env
 ```
 
-## Comandos
+## Comandos - Commands
 
 ```bash
-    //Para inicializar un proyecto nuevo.
-    nodepy init nombre_del_proyecto
+    //Para Inicializar un Proyecto Nuevo en el Directorio Actual.
+    //To Initialize a new Project in the Current Directory
+
+    nodepy new nombre_del_proyecto
 ```
