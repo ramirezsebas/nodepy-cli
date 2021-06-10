@@ -6,7 +6,6 @@ import { promisify } from "util";
 import Listr from "listr";
 import { projectInstall, install } from "pkg-install";
 import inquirer from "inquirer";
-import ora from "ora";
 
 const fileExists = promisify(access);
 const copy = promisify(ncp);

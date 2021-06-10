@@ -1,4 +1,3 @@
-import arg from "arg";
 import inquirer from "inquirer";
 
 import { yargsArguments } from "./config/yargs_config.js";
@@ -38,13 +37,13 @@ const yargsCommand = async () => {
 
       break;
     case "add":
+      //Todo Implementar para agregar rutas, servicios y modelos
       break;
 
     default:
-      break;
   }
 };
 
-export const cli = async (args) => {
+export const cli = async () => {
   yargsCommand();
 };
