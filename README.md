@@ -1,27 +1,41 @@
 # Node JS CLI (En Proceso)
 
+## Instalacion
+
+```bash
+//Instalar de manera Global
+npm i -g @sebas369/nodepy
+
+```
+
 ## Estructura de un Proyecto
 
+```bash
 - public
   - index.html
 - src
 
   - api
+
     - routes
+
       - index.routes.js
-        -controllers
+
+    -controllers
+
   - models
   - services
-    - factory.services.js
+    - factory.service.js
 
 - .gitignore
 - index.js
 - package.json
 - .env
-
-### Para Utilizar
-
 ```
+
+## Comandos
+
+```bash
     //Para inicializar un proyecto nuevo.
-    nodepy init
+    nodepy init nombre_del_proyecto
 ```

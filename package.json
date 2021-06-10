@@ -1,6 +1,6 @@
 {
   "name": "@sebas369/nodepy",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "CLI para Node JS",
   "main": "src/index.js",
   "bin": {
