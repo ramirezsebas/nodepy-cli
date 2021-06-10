@@ -4,7 +4,9 @@ import path from "path";
 import { access, constants } from "fs";
 import { promisify } from "util";
 import Listr from "listr";
-import { projectInstall } from "pkg-install";
+import { projectInstall, install } from "pkg-install";
+import inquirer from "inquirer";
+import ora from "ora";
 
 const fileExists = promisify(access);
 const copy = promisify(ncp);
@@ -25,17 +27,38 @@ export const createProject = async (nombreProyecto, pathProject, type) => {
     //Verificamos si existe la ruta
     await verifTemplate(copyTemplatePath);
 
+    const selectDb = await inquirer.prompt([
+      {
+        type: "list",
+        name: "db",
+        message: "Que Base de Datos deseas utilizar?",
+        choices: [
+          "Postgres",
+          "Mysql",
+          "Mongodb",
+          "Mariadb",
+          "Sqlite",
+          "Sql Server",
+        ],
+        default: "Postgres",
+      },
+    ]);
+
     const tasks = new Listr([
       {
         title: "Copiar la Estructura del Proyecto.",
         task: () => copy_project_structure(finalPathProject, copyTemplatePath),
       },
       {
-        title: "Instalar Todas las Dependencias.",
+        title: "Instalar Todas las Dependencias Generales.",
         task: () =>
           projectInstall({
             cwd: finalPathProject,
           }),
+      },
+      {
+        title: "Instalar las Dependencias de la Base de Datos Seleccionado.",
+        task: () => db_choice(selectDb.db),
       },
     ]);
 
@@ -47,6 +70,54 @@ export const createProject = async (nombreProyecto, pathProject, type) => {
     );
   } catch (error) {
     console.error(error);
+  }
+};
+
+const db_choice = async (db) => {
+  switch (db.toLowerCase()) {
+    case "postgres":
+      await install({
+        sequelize: "^6.6.2",
+        pg: "^8.6.0",
+        "pg-hstore": "^2.3.3",
+      });
+
+      break;
+
+    case "mysql":
+      await install({
+        sequelize: "^6.6.2",
+        mysql2: "^2.2.5",
+      });
+
+      break;
+
+    case "mariadb":
+      await install({
+        sequelize: "^6.6.2",
+        mariadb: "^2.5.3",
+      });
+
+      break;
+
+    case "sqlite":
+      await install({
+        sequelize: "^6.6.2",
+        sqlite3: "^2.5.3",
+      });
+
+      break;
+
+    case "sql server":
+      await install({
+        sequelize: "^6.6.2",
+        tedious: "^11.0.9",
+      });
+
+      break;
+
+    default:
+      break;
   }
 };
 

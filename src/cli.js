@@ -43,7 +43,6 @@ const yargsCommand = async () => {
     default:
       break;
   }
-  console.log(comando);
 };
 
 export const cli = async (args) => {
