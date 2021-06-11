@@ -2,8 +2,6 @@ import inquirer from "inquirer";
 
 import { yargsArguments } from "./config/yargs_config.js";
 
-import { crearModelo, createProject } from "./index.js";
-
 import { new_command } from "./commands/new.js";
 
 import chalk from "chalk";
