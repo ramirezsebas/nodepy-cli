@@ -75,6 +75,7 @@ export const new_command = async (currentPath, projectName) => {
     },
   ]);
 
+  //Excecute sequentially each task
   await executeTasks(
     projectName,
     finalPathProject,
@@ -83,6 +84,7 @@ export const new_command = async (currentPath, projectName) => {
     gitInit
   );
 
+  //Confirm the creation of a New Project
   console.log(
     `%s The Project was Created Successfully
       - Project Name: ${projectName}
@@ -102,8 +104,7 @@ const initializeGit = async (path) => {
     });
     console.log(stdout);
   } catch (error) {
-    console.log(error);
-    errorHandle("Error while trying to initialize with Git");
+    errorHandle("Error while trying to initialize with Git", error);
   }
 };
 
@@ -153,8 +154,7 @@ async function executeTasks(
 
     await tasks.run();
   } catch (error) {
-    console.log(error);
-    errorHandle(`Could'nt create the project ${projectName}`);
+    errorHandle(`Could'nt create the project ${projectName}`, error);
   }
 }
 
@@ -244,7 +244,7 @@ const db_choice = async (db, finalPathProject) => {
         break;
     }
   } catch (error) {
-    errorHandle(`Could'nt install database Dependency `);
+    errorHandle(`Could'nt install database Dependency `, error);
   }
 };
 
@@ -255,7 +255,7 @@ const copy_project_structure = async (pathProject, templatePathProject) => {
       clobber: false,
     });
   } catch (error) {
-    errorHandle(`ERROR: File ${templatePathProject} could'nt be copied`);
+    errorHandle(`ERROR: File ${templatePathProject} could'nt be copied`, error);
   }
 };
 
@@ -263,7 +263,7 @@ async function verifFile(copyTemplatePath) {
   try {
     await fileExists(copyTemplatePath, constants.R_OK);
   } catch (error) {
-    errorHandle(`ERROR: File ${copyTemplatePath} doesn't Exist`);
+    errorHandle(`ERROR: File ${copyTemplatePath} doesn't Exist`, error);
   }
 }
 
@@ -281,6 +281,6 @@ function modifyPackageJson(pkgJsonPath, projectName) {
       });
     });
   } catch (error) {
-    errorHandle(`Error Modifing file ${pkgJsonPath}`);
+    errorHandle(`Error Modifing file ${pkgJsonPath}`, error);
   }
 }

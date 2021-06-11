@@ -26,6 +26,7 @@ export const cli = async () => {
   }
 
   try {
+    //New Command
     if (commands[0] === "new" || commands[0] === "n") {
       let projectName = commands[1];
 
