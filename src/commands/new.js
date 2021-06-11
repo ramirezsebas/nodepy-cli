@@ -1,19 +1,35 @@
 import chalk from "chalk";
 import ncp from "ncp";
-import path from "path";
-import { access, constants } from "fs";
-import { promisify } from "util";
 import Listr from "listr";
-import { projectInstall, install } from "pkg-install";
+import path from "path";
 import inquirer from "inquirer";
 import fs from "fs";
+import execa from "execa";
 
+import { access, constants } from "fs";
+import { promisify } from "util";
+import { projectInstall, install } from "pkg-install";
 import { errorHandle } from "../helpers/error_handle";
 
 const fileExists = promisify(access);
 const copy = promisify(ncp);
 
 export const new_command = async (currentPath, projectName) => {
+  // Create final path of project where template will be copied
+  let finalPathProject = path.resolve(currentPath, projectName);
+
+  //Ask if they want to initialize a git repository
+  let isGitInit = await inquirer.prompt([
+    {
+      type: "confirm",
+      message: "Would you like to initialize a git repository?",
+      name: "gitInit",
+      default: true,
+    },
+  ]);
+
+  const { gitInit } = isGitInit;
+
   //Ask the Project Type
   let projectTypeAnswer = await inquirer.prompt([
     {
@@ -41,11 +57,6 @@ export const new_command = async (currentPath, projectName) => {
   //Check if the template file exists
   await verifFile(templatePath);
 
-  //Rename Package.json -> name with project name
-  let pkgJsonPath = path.resolve(templatePath, "package.json");
-
-  modifyPackageJson(pkgJsonPath, projectName);
-
   // Pick prefered Database
   const selectedDb = await inquirer.prompt([
     {
@@ -64,35 +75,62 @@ export const new_command = async (currentPath, projectName) => {
     },
   ]);
 
-  // Create final path of project where template will be copied
-  let finalPathProject = path.resolve(currentPath, projectName);
-
-  await executeTasks(projectName, finalPathProject, templatePath, selectedDb);
+  await executeTasks(
+    projectName,
+    finalPathProject,
+    templatePath,
+    selectedDb,
+    gitInit
+  );
 
   console.log(
     `%s The Project was Created Successfully
-      - Project Name: ${projectName} 
+      - Project Name: ${projectName}
       - Type: ${typeProject}
       - Database: ${selectedDb.db}
+      - Git Repository Initialized: ${gitInit}
     `,
     chalk.green.bold("DONE: ")
   );
+};
+
+const initializeGit = async (path) => {
+  try {
+    const { stdout } = await execa(`git`, ["init"], {
+      preferLocal: true,
+      cwd: path,
+    });
+    console.log(stdout);
+  } catch (error) {
+    console.log(error);
+    errorHandle("Error while trying to initialize with Git");
+  }
 };
 
 async function executeTasks(
   projectName,
   finalPathProject,
   copyTemplatePath,
-  selectedDb
+  selectedDb,
+  isGitInit
 ) {
   try {
-    const tasks = new Listr([
+    let taskObjs = [
       {
         title: `Creating Structure for ${projectName}`,
         task: () => copy_project_structure(finalPathProject, copyTemplatePath),
       },
       {
-        title: "Installing all the general Dependencies.",
+        title: "Renaming Project in Package.json",
+        task: () => {
+          //Rename Package.json -> name with project name
+          let pkgJsonPath = path.resolve(finalPathProject, "package.json");
+
+          modifyPackageJson(pkgJsonPath, projectName);
+        },
+      },
+      {
+        title: "Installing all the General Dependencies.",
         task: () =>
           projectInstall({
             cwd: finalPathProject,
@@ -102,14 +140,21 @@ async function executeTasks(
         title: "Installing all the Dependencies for the Selected Database.",
         task: () => db_choice(selectedDb.db, finalPathProject),
       },
-    ]);
+    ];
+
+    if (isGitInit) {
+      taskObjs.push({
+        title: `Initializing a Git Repository`,
+        task: () => initializeGit(finalPathProject),
+      });
+    }
+
+    const tasks = new Listr(taskObjs);
 
     await tasks.run();
   } catch (error) {
-    errorHandle(
-      `%s`,
-      chalk.red.bold(`Could'nt create the project ${projectName}`)
-    );
+    console.log(error);
+    errorHandle(`Could'nt create the project ${projectName}`);
   }
 }
 
@@ -121,9 +166,10 @@ const db_choice = async (db, finalPathProject) => {
     cwd: finalPathProject,
   };
   try {
+    let dependency = null;
     switch (db.toLowerCase()) {
       case "postgres":
-        let a = await install(
+        dependency = await install(
           {
             ...dbDependencies,
             pg: "^8.6.0",
@@ -131,11 +177,11 @@ const db_choice = async (db, finalPathProject) => {
           },
           option
         );
-        console.log(a);
+        console.log(dependency);
         break;
 
       case "mysql":
-        await install(
+        dependency = await install(
           {
             ...dbDependencies,
             mysql2: "^2.2.5",
@@ -143,10 +189,11 @@ const db_choice = async (db, finalPathProject) => {
           option
         );
 
+        console.log(dependency);
         break;
 
       case "mariadb":
-        await install(
+        dependency = await install(
           {
             ...dbDependencies,
             mariadb: "^2.5.3",
@@ -154,10 +201,11 @@ const db_choice = async (db, finalPathProject) => {
           option
         );
 
+        console.log(dependency);
         break;
 
       case "sqlite":
-        await install(
+        dependency = await install(
           {
             ...dbDependencies,
             sqlite3: "^5.0.2",
@@ -165,10 +213,11 @@ const db_choice = async (db, finalPathProject) => {
           option
         );
 
+        console.log(dependency);
         break;
 
       case "sql server":
-        await install(
+        dependency = await install(
           {
             ...dbDependencies,
             tedious: "^11.0.9",
@@ -176,9 +225,10 @@ const db_choice = async (db, finalPathProject) => {
           option
         );
 
+        console.log(dependency);
         break;
       case "mongodb":
-        await install(
+        dependency = await install(
           {
             mongodb: "^3.6.9",
             mongoose: "^5.12.13",
@@ -186,13 +236,15 @@ const db_choice = async (db, finalPathProject) => {
           option
         );
 
+        console.log(dependency);
         break;
 
       default:
+        errorHandle(`Please Choose a Valid Database `);
         break;
     }
   } catch (error) {
-    errorHandle(`%s`, chalk.red.bold(`Could'nt install database Dependency `));
+    errorHandle(`Could'nt install database Dependency `);
   }
 };
 
@@ -218,11 +270,7 @@ async function verifFile(copyTemplatePath) {
 function modifyPackageJson(pkgJsonPath, projectName) {
   try {
     fs.readFile(pkgJsonPath, "utf-8", function (err, data) {
-      if (err)
-        errorHandle(
-          `%s`,
-          chalk.red.bold(`Could'nt read the file ${pkgJsonPath}`)
-        );
+      if (err) errorHandle(`Could'nt read the file ${pkgJsonPath}`);
       let newPkgJson = data.replace("my-node-project", projectName); // string
       fs.writeFile(pkgJsonPath, newPkgJson, "utf-8", (err) => {
         if (err)
@@ -233,6 +281,6 @@ function modifyPackageJson(pkgJsonPath, projectName) {
       });
     });
   } catch (error) {
-    errorHandle(`%s`, chalk.red.bold(`Error Modifing file ${pkgJsonPath}`));
+    errorHandle(`Error Modifing file ${pkgJsonPath}`);
   }
 }

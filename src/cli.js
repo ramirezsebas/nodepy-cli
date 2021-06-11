@@ -1,17 +1,18 @@
 import inquirer from "inquirer";
+import chalk from "chalk";
 
 import { yargsArguments } from "./config/yargs_config.js";
 
 import { new_command } from "./commands/new.js";
 
-import chalk from "chalk";
+import { errorHandle } from "./helpers/error_handle.js";
 
 export const cli = async () => {
   let commands = yargsArguments._;
 
   let currentPath = process.cwd();
 
-  //Si no se envia ningun comando
+  //If no commands were used
   if (noArguments(commands)) {
     console.log(
       `%s
@@ -52,7 +53,7 @@ export const cli = async () => {
       )
     );
   } catch (error) {
-    console.log(error);
+    errorHandle(error);
   }
 };
 
