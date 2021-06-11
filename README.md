@@ -2,6 +2,8 @@
 
 CLI that generates the structure of a Node JS project with Express.
 
+Initializes a Git Repository for your Project.
+
 Soportes Relational Database with the ORM Sequelize:
 
 - Postgres
