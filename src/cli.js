@@ -2,48 +2,62 @@ import inquirer from "inquirer";
 
 import { yargsArguments } from "./config/yargs_config.js";
 
-import { createProject } from "./index.js";
+import { crearModelo, createProject } from "./index.js";
 
-const yargsCommand = async () => {
-  //Obtenemos el comando
-  let comando = yargsArguments._[0];
+import { new_command } from "./commands/new.js";
+
+import chalk from "chalk";
+
+export const cli = async () => {
+  let commands = yargsArguments._;
+
   let currentPath = process.cwd();
 
-  switch (comando) {
-    case "new":
-      if (yargsArguments._[1]) {
-        let nombreProyecto = yargsArguments._[1];
-        try {
-          //El usuario selecciona el type del proyecto
-          let respuestaType = await inquirer.prompt([
-            {
-              type: "list",
-              name: "type",
-              message: "Que Tipo de Proyecto Usaras?",
-              choices: ["COMMONJS", "ESM"],
-              default: "COMMONJS",
-            },
-          ]);
-          //Creamos la estructura del proyecto
-          await createProject(
-            nombreProyecto,
-            currentPath,
-            respuestaType.type.toLowerCase()
-          );
-        } catch (error) {
-          console.log(error);
-        }
+  //Si no se envia ningun comando
+  if (noArguments(commands)) {
+    console.log(
+      `%s
+    - %s : Initialize a New Project in the Current Directory
+     
+    `,
+      chalk.green.bold("Available Commands:"),
+      chalk.green.bold("new (n)")
+    );
+    return;
+  }
+
+  try {
+    if (commands[0] === "new" || commands[0] === "n") {
+      let projectName = commands[1];
+
+      //If project name isn't provided
+      if (!commands[1]) {
+        projectName = await inquirer.prompt([
+          {
+            type: "input",
+            message: "What would be the name of your workspace and project?",
+            name: "project",
+          },
+        ]);
+        projectName = projectName.project;
       }
 
-      break;
-    case "add":
-      //Todo Implementar para agregar rutas, servicios y modelos
-      break;
+      new_command(currentPath, projectName);
 
-    default:
+      return;
+    }
+
+    console.log(
+      `%s`,
+      chalk.red.bold(
+        `The Command ("${commands[0]}") is Invalid. For a List of available options run nodepy -h`
+      )
+    );
+  } catch (error) {
+    console.log(error);
   }
 };
 
-export const cli = async () => {
-  yargsCommand();
+const noArguments = (commands) => {
+  return commands.length <= 0;
 };
