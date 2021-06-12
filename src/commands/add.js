@@ -6,6 +6,7 @@ export const add_model_command = (currentPath, modelName) => {
   //Navigate to models directory
   let modelsDirectory = path.resolve(currentPath, "src/models");
 
+  //All models should be in singular
   if (modelName.endsWith("s"))
     modelName = modelName.substring(0, modelName.length - 1);
 

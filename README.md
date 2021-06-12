@@ -16,22 +16,6 @@ Soports Non Relational Database with the ORM Mongoose
 
 - MongoDB
 
----
-
-Un CLI que permite al desarollador generar una estructura base de un proyecto en Node JS con express.
-
-Soporta Base de Datos Relacionales con el ORM Sequelize:
-
-- Postgres
-- Mysql
-- Sql Server
-- MariaDB
-- Sqlite
-
-Soporta Base de Datos No Relacionales con el ORM Mongose:
-
-- MongoDB
-
 ## Instalacion - Instalation
 
 ```bash
