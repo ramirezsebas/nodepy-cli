@@ -62,7 +62,6 @@ export const cli = async () => {
           });
           modelInput = modelInput.model;
         }
-        console.log(modelInput);
 
         add_model_command(currentPath, modelInput);
         return;
