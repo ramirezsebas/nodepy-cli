@@ -1,18 +1,21 @@
 import chalk from "chalk";
-import ncp from "ncp";
+
 import Listr from "listr";
 import path from "path";
 import inquirer from "inquirer";
 import fs from "fs";
 import execa from "execa";
 
-import { access, constants } from "fs";
-import { promisify } from "util";
+import { constants } from "fs";
 import { projectInstall, install } from "pkg-install";
-import { errorHandle } from "../helpers/error_handle";
-
-const fileExists = promisify(access);
-const copy = promisify(ncp);
+import { errorHandle } from "../helpers/error_handle.js";
+import {
+  db_conexion_mongoose,
+  db_conexion_sequelize,
+  db_seq_bolierplate_commonjs,
+  db_seq_bolierplate_esm,
+} from "../helpers/boilerplate_db.js";
+import { copy, fileExists } from "../helpers/file_helper.js";
 
 export const new_command = async (currentPath, projectName) => {
   // Create final path of project where template will be copied
@@ -36,8 +39,8 @@ export const new_command = async (currentPath, projectName) => {
       type: "list",
       name: "typeProject",
       message: "What type will you be using?",
-      choices: ["COMMONJS", "ESM"],
-      default: "COMMONJS",
+      choices: ["CommonJS", "ESM"],
+      default: "CommonJS",
     },
   ]);
 
@@ -113,7 +116,8 @@ async function executeTasks(
   finalPathProject,
   copyTemplatePath,
   selectedDb,
-  isGitInit
+  isGitInit,
+  projectTypeAnswer
 ) {
   try {
     let taskObjs = [
@@ -141,6 +145,15 @@ async function executeTasks(
         title: "Installing all the Dependencies for the Selected Database.",
         task: () => db_choice(selectedDb.db, finalPathProject),
       },
+      {
+        title: `Creating Conexion with Database for ${selectedDb.db}`,
+        task: () =>
+          createDatabaseConexion(
+            finalPathProject,
+            projectTypeAnswer,
+            selectedDb
+          ),
+      },
     ];
 
     if (isGitInit) {
@@ -154,6 +167,7 @@ async function executeTasks(
 
     await tasks.run();
   } catch (error) {
+    //Modificar por que si se crea
     errorHandle(`Could'nt create the project ${projectName}`, error);
   }
 }
@@ -283,3 +297,73 @@ function modifyPackageJson(pkgJsonPath, projectName) {
     errorHandle(`Error Modifing file ${pkgJsonPath}`, error);
   }
 }
+
+const createDatabaseConexion = (
+  finalPathProject,
+  projectTypeAnswer,
+  selectedDb
+) => {
+  //Go to databse driver
+  let dbDriver = path.resolve(finalPathProject, "src/database");
+
+  let context = db_seq_bolierplate_commonjs();
+  if (projectTypeAnswer === "ESM") context = db_seq_bolierplate_esm();
+
+  fs.writeFile(path.resolve(dbDriver, "database_driver.js"), context, (err) => {
+    if (err)
+      errorHandle(`Could'nt create the Database Conexion in server.js`, err);
+    console.log(
+      `Successfully created the Database Conexion in server.js
+%s
+        `,
+      chalk.yellow.bold(
+        "Please fill in your .env to Successfully Establish a Conexion with your Database "
+      )
+    );
+  });
+
+  try {
+    let db_con = db_conexion_sequelize();
+    if (selectedDb.db === "Mongodb") {
+      db_con = db_conexion_mongoose();
+      fs.appendFile(
+        path.resolve(finalPathProject, ".env"),
+        "\nMONGODB=",
+        (err) => {
+          if (err) errorHandle("Error", err);
+        }
+      );
+      let config = path.resolve(
+        finalPathProject,
+        "src/config/env_variables.js"
+      );
+      fs.readFile(config, "utf-8", function (err, data) {
+        if (err) errorHandle(`Could'nt read the file `);
+        let newConfigFile = data.replace(
+          "};",
+          `
+mongoDb: process.env.MONGODB
+};
+        `
+        );
+        fs.writeFile(config, newConfigFile, "utf-8", (err) => {
+          if (err) errorHandle(`%s`, chalk.red.bold(`Could'nt write the file`));
+        });
+      });
+    }
+    let serverPath = path.resolve(finalPathProject, "src", "server.js");
+    fs.readFile(serverPath, "utf-8", function (err, data) {
+      if (err) errorHandle(`Could'nt read the file server.js`);
+      let newServerFile = data.replace("databaseConex() {}", db_con);
+      fs.writeFile(serverPath, newServerFile, "utf-8", (err) => {
+        if (err)
+          errorHandle(
+            `%s`,
+            chalk.red.bold(`Could'nt write the file server.js`)
+          );
+      });
+    });
+  } catch (error) {
+    errorHandle(`Error Modifing file server.js}`, error);
+  }
+};
