@@ -1,8 +1,8 @@
 # Node JS CLI
 
-CLI that generates the structure of a Node JS project with Express.
+CLI that generates the structure of a Node JS project with Express(Boilerplate code).
 
-Initializes a Git Repository for your Project.
+Initialize a Git Repository for your Project.
 
 Soports Relational Database with the ORM Sequelize:
 
@@ -72,5 +72,9 @@ npm i -g @sebas369/nodepy
     //Para Inicializar un Proyecto Nuevo en el Directorio Actual.
     //To Initialize a new Project in the Current Directory
 
-    nodepy new nombre_del_proyecto
+    nodepy new projectName or nodepy n projectName
+
+    //Para crear un nuevo modelo
+    // To create a new model
+    nodepy add model modelName or nodepy a m modelName
 ```
