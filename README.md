@@ -4,7 +4,7 @@ CLI that generates the structure of a Node JS project with Express.
 
 Initializes a Git Repository for your Project.
 
-Soportes Relational Database with the ORM Sequelize:
+Soports Relational Database with the ORM Sequelize:
 
 - Postgres
 - Mysql
@@ -12,7 +12,7 @@ Soportes Relational Database with the ORM Sequelize:
 - MariaDB
 - Sqlite
 
-Soportes Non Relational Database with the ORM Sequelize
+Soports Non Relational Database with the ORM Mongoose
 
 - MongoDB
 

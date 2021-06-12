@@ -249,7 +249,6 @@ const db_choice = async (db, finalPathProject) => {
 };
 
 const copy_project_structure = async (pathProject, templatePathProject) => {
-  //Usamos para copiar
   try {
     return copy(templatePathProject, pathProject, {
       clobber: false,
@@ -271,7 +270,7 @@ function modifyPackageJson(pkgJsonPath, projectName) {
   try {
     fs.readFile(pkgJsonPath, "utf-8", function (err, data) {
       if (err) errorHandle(`Could'nt read the file ${pkgJsonPath}`);
-      let newPkgJson = data.replace("my-node-project", projectName); // string
+      let newPkgJson = data.replace("my-node-project", projectName);
       fs.writeFile(pkgJsonPath, newPkgJson, "utf-8", (err) => {
         if (err)
           errorHandle(
