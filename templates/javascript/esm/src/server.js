@@ -5,9 +5,12 @@ import path from "path";
 class Server {
   constructor() {
     this.app = express();
+    this.databaseConex();
     this.middleware();
     this.routes();
   }
+
+  databaseConex() {}
 
   middleware() {
     const __dirname = path.dirname(fileURLToPath(import.meta.url));
