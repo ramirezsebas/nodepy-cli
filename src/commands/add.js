@@ -7,22 +7,41 @@ export const add_model_command = (currentPath, modelName) => {
   let modelsDirectory = path.resolve(currentPath, "src/models");
 
   //All models should be in singular
+  let newModelName = "";
   if (modelName.endsWith("s"))
-    modelName = modelName.substring(0, modelName.length - 1);
+    newModelName = modelName.substring(0, modelName.length - 1);
 
-  //Create model.model.js
-  createModelFile(modelsDirectory, modelName);
+  let model = `
+const { DataTypes } = require("sequelize");
 
-  return;
-};
+const databaseDriver = require("../database/database_driver.js");
 
-const createModelFile = (modelsDirectory, modelName) => {
-  fs.open(
+const ${
+    modelName.charAt(0).toUpperCase() + modelName.slice(1)
+  } = databaseDriver.define(
+  "${newModelName ? newModelName : modelName + "s"}",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+    },
+  },
+  {
+    freezeTableName: true,
+    timestamps: false,
+  }
+);
+
+module.exports = ${modelName.charAt(0).toUpperCase() + modelName.slice(1)};
+`;
+
+  fs.writeFile(
     path.resolve(modelsDirectory, `${modelName}.model.js`),
-    "w",
+    model,
     (err) => {
-      if (err) errorHandle(`Error Creating the Model ${modelName}`, err);
-      console.log(`Successfully Created the Model ${modelName}`);
+      if (err) errorHandle("Error", err);
+      console.log("as");
     }
   );
+  return;
 };

@@ -94,8 +94,11 @@ export const new_command = async (currentPath, projectName) => {
       - Type: ${typeProject}
       - Database: ${selectedDb.db}
       - Git Repository Initialized: ${gitInit}
+    %s
+    cd ${projectName}
     `,
-    chalk.green.bold("DONE: ")
+    chalk.green.bold("DONE: "),
+    chalk.green.bold("Na'ape nde Proyecto")
   );
 };
 
@@ -306,33 +309,17 @@ const createDatabaseConexion = (
   //Go to databse driver
   let dbDriver = path.resolve(finalPathProject, "src/database");
 
+  //Define the structure being used
   let context = db_seq_bolierplate_commonjs();
   if (projectTypeAnswer === "ESM") context = db_seq_bolierplate_esm();
 
-  fs.writeFile(path.resolve(dbDriver, "database_driver.js"), context, (err) => {
-    if (err)
-      errorHandle(`Could'nt create the Database Conexion in server.js`, err);
-    console.log(
-      `Successfully created the Database Conexion in server.js
-%s
-        `,
-      chalk.yellow.bold(
-        "Please fill in your .env to Successfully Establish a Conexion with your Database "
-      )
-    );
-  });
+  createDBDriverFile(dbDriver, context);
 
   try {
     let db_con = db_conexion_sequelize();
     if (selectedDb.db === "Mongodb") {
       db_con = db_conexion_mongoose();
-      fs.appendFile(
-        path.resolve(finalPathProject, ".env"),
-        "\nMONGODB=",
-        (err) => {
-          if (err) errorHandle("Error", err);
-        }
-      );
+      modifyEnv(finalPathProject);
       let config = path.resolve(
         finalPathProject,
         "src/config/env_variables.js"
@@ -367,3 +354,24 @@ mongoDb: process.env.MONGODB
     errorHandle(`Error Modifing file server.js}`, error);
   }
 };
+
+function modifyEnv(finalPathProject) {
+  fs.appendFile(path.resolve(finalPathProject, ".env"), "\nMONGODB=", (err) => {
+    if (err) errorHandle("Error", err);
+  });
+}
+
+function createDBDriverFile(dbDriver, context) {
+  fs.writeFile(path.resolve(dbDriver, "database_driver.js"), context, (err) => {
+    if (err)
+      errorHandle(`Could'nt create the Database Conexion in server.js`, err);
+    console.log(
+      `Successfully created the Database Conexion in server.js
+%s
+        `,
+      chalk.yellow.bold(
+        "Please fill in your .env to Successfully Establish a Conexion with your Database "
+      )
+    );
+  });
+}
