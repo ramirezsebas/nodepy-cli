@@ -4,9 +4,12 @@ const cors = require("cors");
 class Server {
   constructor() {
     this.app = express();
+    this.databaseconnection();
     this.middleware();
     this.routes();
   }
+
+  databaseconnection() {}
 
   middleware() {
     //Permitir los requests y responses en formato JSON
