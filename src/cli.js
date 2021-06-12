@@ -6,6 +6,7 @@ import { yargsArguments } from "./config/yargs_config.js";
 import { new_command } from "./commands/new.js";
 
 import { errorHandle } from "./helpers/error_handle.js";
+import { add_model_command } from "./commands/add.js";
 
 export const cli = async () => {
   let commands = yargsArguments._;
@@ -17,10 +18,13 @@ export const cli = async () => {
     console.log(
       `%s
     - %s : Initialize a New Project in the Current Directory
-     
+    - %s : Add a new Schema
+        - %s Creates a New Model in the models directory
     `,
       chalk.green.bold("Available Commands:"),
-      chalk.green.bold("new (n)")
+      chalk.green.bold("new (n)"),
+      chalk.green.bold("add (a)"),
+      chalk.green.bold("model (m)")
     );
     return;
   }
@@ -45,6 +49,24 @@ export const cli = async () => {
       new_command(currentPath, projectName);
 
       return;
+    }
+
+    if (commands[0] === "add" || commands[0] === "a") {
+      if (commands[1] === "model" || commands[1] === "m") {
+        let modelInput = commands[2];
+        if (!modelInput) {
+          modelInput = await inquirer.prompt({
+            type: "input",
+            message: "What do you want to call your model?",
+            name: "model",
+          });
+          modelInput = modelInput.model;
+        }
+        console.log(modelInput);
+
+        add_model_command(currentPath, modelInput);
+        return;
+      }
     }
 
     console.log(
