@@ -1,17 +1,17 @@
 import inquirer from "inquirer";
 import chalk from "chalk";
-
 import { yargsArguments } from "./config/yargs_config.js";
-
-import { new_command } from "./commands/new.js";
+import path from "path";
 
 import { errorHandle } from "./helpers/error_handle.js";
-import { add_model_command } from "./commands/add.js";
+import NewCommand from "./commands/new_command.js";
 
 export const cli = async () => {
   let commands = yargsArguments._;
 
   let currentPath = process.cwd();
+
+  let newCommand = new NewCommand();
 
   //If no commands were used
   if (noArguments(commands)) {
@@ -46,8 +46,9 @@ export const cli = async () => {
         projectName = projectName.project;
       }
 
-      new_command(currentPath, projectName);
-
+      newCommand.projectName = projectName;
+      newCommand.projectPath = path.resolve(currentPath, projectName);
+      await newCommand.createProject();
       return;
     }
 
@@ -62,8 +63,15 @@ export const cli = async () => {
           });
           modelInput = modelInput.model;
         }
+        // "type": "commonjs"
+        // "type": "module"
 
-        add_model_command(currentPath, modelInput);
+        // add_model_command(
+        //   currentPath,
+        //   modelInput,
+        //   newCommand.projectType,
+        //   newCommand.database === "Mongodb"
+        // );
         return;
       }
     }
