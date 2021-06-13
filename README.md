@@ -4,6 +4,8 @@ CLI that generates the structure of a Node JS project with Express(Boilerplate c
 
 Initialize a Git Repository for your Project.
 
+Creates the conexion to your Database
+
 Soports Relational Database with the ORM Sequelize:
 
 - Postgres
@@ -57,8 +59,4 @@ npm i -g @sebas369/nodepy
     //To Initialize a new Project in the Current Directory
 
     nodepy new projectName or nodepy n projectName
-
-    //Para crear un nuevo modelo
-    // To create a new model
-    nodepy add model modelName or nodepy a m modelName
 ```
