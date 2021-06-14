@@ -29,7 +29,7 @@ class NewCommand extends Command {
 
     //Default Type, Database, etc
     this.database = "Postgres";
-    this.projectType = "CommonJS";
+    this.projectType = "commonjs";
     this.isGitRepository = true;
     this.templatePath = path.join(
       process.platform === "win32"

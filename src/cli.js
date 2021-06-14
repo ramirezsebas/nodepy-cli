@@ -7,12 +7,16 @@ import { errorHandle } from "./helpers/error_handle.js";
 import NewCommand from "./commands/new_command.js";
 
 export const cli = async () => {
+  //Obtenemos los comandos
   let commands = yargsArguments._;
 
+  //Guardar el path
   let currentPath = process.cwd();
+
 
   let newCommand = new NewCommand();
 
+  console.log(commands);
   //If no commands were used
   if (noArguments(commands)) {
     console.log(
@@ -22,9 +26,7 @@ export const cli = async () => {
         - %s Creates a New Model in the models directory
     `,
       chalk.green.bold("Available Commands:"),
-      chalk.green.bold("new (n)"),
-      chalk.green.bold("add (a)"),
-      chalk.green.bold("model (m)")
+      chalk.green.bold("new (n)")
     );
     return;
   }
@@ -52,29 +54,29 @@ export const cli = async () => {
       return;
     }
 
-    if (commands[0] === "add" || commands[0] === "a") {
-      if (commands[1] === "model" || commands[1] === "m") {
-        let modelInput = commands[2];
-        if (!modelInput) {
-          modelInput = await inquirer.prompt({
-            type: "input",
-            message: "What do you want to call your model?",
-            name: "model",
-          });
-          modelInput = modelInput.model;
-        }
-        // "type": "commonjs"
-        // "type": "module"
+    // if (commands[0] === "add" || commands[0] === "a") {
+    //   if (commands[1] === "model" || commands[1] === "m") {
+    //     let modelInput = commands[2];
+    //     if (!modelInput) {
+    //       modelInput = await inquirer.prompt({
+    //         type: "input",
+    //         message: "What do you want to call your model?",
+    //         name: "model",
+    //       });
+    //       modelInput = modelInput.model;
+    //     }
+    //     // "type": "commonjs"
+    //     // "type": "module"
 
-        // add_model_command(
-        //   currentPath,
-        //   modelInput,
-        //   newCommand.projectType,
-        //   newCommand.database === "Mongodb"
-        // );
-        return;
-      }
-    }
+    //     // add_model_command(
+    //     //   currentPath,
+    //     //   modelInput,
+    //     //   newCommand.projectType,
+    //     //   newCommand.database === "Mongodb"
+    //     // );
+    //     return;
+    //   }
+    // }
 
     console.log(
       `%s`,
