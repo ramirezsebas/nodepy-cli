@@ -1,7 +1,7 @@
-import express from 'express';
-import http from 'http';
-import dotenv from 'dotenv';
-import environment from './environment.js';
+const express = require('express');
+const http = require('http');
+const dotenv = require('dotenv');
+const environment = require('./environment.js');
 
 class Server{
     constructor(){
@@ -35,7 +35,7 @@ class Server{
 
     createHttpsServer(){
 
-        const { sslKey:key, sslCredentials:cred } = environment;
+        const { key, cred } = environment;
         
         const httpsServer = https.createServer(this.app,{
             key,

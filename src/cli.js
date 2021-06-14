@@ -10,20 +10,17 @@ export const cli = async () => {
   //Obtenemos los comandos
   let commands = yargsArguments._;
 
-  //Guardar el path
+  //Guardar el directorio actual
   let currentPath = process.cwd();
 
 
-  let newCommand = new NewCommand();
 
-  console.log(commands);
-  //If no commands were used
+
+  //Si los comandos no fueron insertados
   if (noArguments(commands)) {
     console.log(
       `%s
     - %s : Initialize a New Project in the Current Directory
-    - %s : Add a new Schema
-        - %s Creates a New Model in the models directory
     `,
       chalk.green.bold("Available Commands:"),
       chalk.green.bold("new (n)")
@@ -48,8 +45,21 @@ export const cli = async () => {
         projectName = projectName.project;
       }
 
-      newCommand.projectName = projectName;
-      newCommand.projectPath = path.resolve(currentPath, projectName);
+      let typeTemplate = await inquirer.prompt([
+        {
+          type: "list",
+          message: "Which one do you want to work with?",
+          name: "templateType",
+          choices: [
+            "Typescript",
+            "Javascript",
+          ]
+        },
+      ]); 
+
+      const { templateType } = typeTemplate;
+
+      let newCommand = new NewCommand(path.resolve(currentPath, projectName),projectName,templateType==='Typescript'?true:false);
       await newCommand.createProject();
       return;
     }

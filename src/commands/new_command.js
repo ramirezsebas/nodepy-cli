@@ -22,22 +22,41 @@ import {
 } from "../helpers/boilerplate_db.js";
 
 class NewCommand extends Command {
-  constructor(projectPath = "", projectName = "") {
+  constructor(projectPath = "", projectName = "",isTS = false) {
     super("new");
     this.projectName = projectName;
     this.projectPath = projectPath;
 
     //Default Type, Database, etc
     this.database = "Postgres";
-    this.projectType = "commonjs";
     this.isGitRepository = true;
+    this.projectType = '';
+
+    this.isTS = isTS;
+    
     this.templatePath = path.join(
       process.platform === "win32"
         ? new URL(import.meta.url).pathname.substring(1)
         : new URL(import.meta.url).pathname,
-      "../../../templates/javascript",
-      this.projectType
-    );
+        !this.isTS?
+      "../../../templates/javascript"
+      :"../../../templates/typescript");
+  }
+
+
+  async getProjectType(){
+    let projectTypeAnswer = await inquirer.prompt([
+      {
+        type: "list",
+        name: "typeProject",
+        message: "What type will you be using?",
+        choices: ["commonjs", "esm"],
+        default: "commonjs",
+      },
+    ]);
+
+    return  projectTypeAnswer.typeProject;
+    
   }
 
   async createProject() {
@@ -53,18 +72,11 @@ class NewCommand extends Command {
 
     this.isGitRepository = isGitInit.git;
 
-    //Ask the Project Type
-    let projectTypeAnswer = await inquirer.prompt([
-      {
-        type: "list",
-        name: "typeProject",
-        message: "What type will you be using?",
-        choices: ["CommonJS", "ESM"],
-        default: "CommonJS",
-      },
-    ]);
+    if(!this.isTS){
+      this.projectType = await this.getProjectType();
+      this.templatePath = path.join(this.templatePath,this.projectType);
+    }
 
-    this.projectType = projectTypeAnswer.typeProject;
 
     //Check if the template file exists
     await verifFile(this.templatePath);
@@ -146,10 +158,10 @@ class NewCommand extends Command {
           title: `Installing All the Dependencies for the Selected Database.(${this.database})`,
           task: () => this.installDatabaseDependencies(),
         },
-        {
-          title: `Creating Conexion with Database.(${this.database})`,
-          task: () => this.createDatabaseConexion(),
-        },
+        // {
+        //   title: `Creating Conexion with Database.(${this.database})`,
+        //   task: () => this.createDatabaseConexion(),
+        // },
       ];
 
       if (this.isGitRepository) {
