@@ -1,16 +1,16 @@
-import express, { Application } from 'express';
-import http from 'http';
-import dotenv from 'dotenv';
-import environment from './environment';
-import https, { ServerOptions } from 'https';
+const express = require('express');
+const http = require('http');
+const dotenv = require('dotenv');
+const environment = require('./environment.js');
+const database = require('./database.js');
 
 class Server{
-    private app: Application;
-
     constructor(){
         dotenv.config();
 
         this.app = express();
+
+        this.connectDatabase();
 
         this.configServer();
 
@@ -22,37 +22,38 @@ class Server{
         // this.createHttpsServer();
     }
 
-    configServer(): void{
+    connectDatabase(){}
+
+    configServer(){
         const { host, port } = environment;
 
         this.app.set('host', host || '127.0.0.1');
         this.app.set('port', port || 4000);
     }
 
-    createHttpServer(): void{
+    createHttpServer(){
         const httpServer = http.createServer(this.app);
         httpServer.listen(this.app.get('port'), this.app.get('host'), () => {
             console.log(`Server up and running http://${this.app.get('host')}:${this.app.get('port')}/`);
         })
     }
 
-    createHttpsServer(): void{
+    createHttpsServer(){
 
-        const { sslKey:key, sslCredentials:cred } = environment;
+        const { key, cred } = environment;
         
-        const httpsServer = https.createServer({
+        const httpsServer = https.createServer(this.app,{
             key,
             cred
-        } as ServerOptions, this.app);
-
+        });
         httpsServer.listen(this.app.get('port'), this.app.get('host'), () => {
             console.log(`Server up and running http://${this.app.get('host')}:${this.app.get('port')}/`);
         })
     }
 
-    initApp(): Application {
+    initApp() {
         return this.app;
     }
 }
 
-export default Server;
+module.exports = Server;

@@ -1,4 +1,4 @@
-export const db_seq_bolierplate_commonjs = () => {
+export const db_seq_bolierplate_commonjs = (isTS) => {
   return `
 const {
   bdName,
@@ -6,7 +6,7 @@ const {
   userBd,
   passswordBd,
   host
-} = require("../config/env_variables.js");
+} = require("../config/environment.${isTS?'ts':'js'}");
 
 const sequelize = require("sequelize") 
 const sequelize = new Sequelize(bdName, userBd, passswordBd, {
@@ -15,12 +15,11 @@ const sequelize = new Sequelize(bdName, userBd, passswordBd, {
   });
 
 
-Object.freeze(sequelize);
 module.exports = sequelize;
 `;
 };
 
-export const db_seq_bolierplate_esm = () => {
+export const db_seq_bolierplate_esm = (isTS) => {
   return `
 import {
   bdName,
@@ -28,27 +27,24 @@ import {
   userBd,
   passswordBd,
   host
-} from "../config/env_variables.js";
+} from "../config/environment.${isTS?'ts':'js'}";
 
 import sequelize from 'sequelize';
 
-const sequelize = new Sequelize(bdName, userBd, passswordBd, {
+const database = new Sequelize(bdName, userBd, passswordBd, {
     host: host,
     dialect: bd,
   });
 
-
-Object.freeze(sequelize);
-  
-export default sequelize;
+export default database;
 `;
 };
 
 export const db_conexion_sequelize = () => {
   let dbAuth = `
-databaseConex() {
+  connectDatabase() {
     try {
-      await sequelize.authenticate();
+      await database.authenticate();
       console.log('Connection has been established successfully.');
     } catch (error) {
       console.error('Unable to connect to the database:', error);
@@ -58,14 +54,14 @@ databaseConex() {
   return dbAuth;
 };
 
-export const db_mongoose_bolierplate_commonjs = () => {
+export const db_mongoose_bolierplate_commonjs = (isTS) => {
   let dc_con = `
-import { mongoDB } from "../config/env_variables.js";
+const { mongoDB } = require("../config/environment.${isTS?'ts':'js'}");
 
-  const mongoose = require("mongoose");
+const mongoose = require("mongoose");
 const dbConnect = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB, {
+    await mongoose.connect(mongoDB, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,
@@ -85,10 +81,10 @@ module.exports = { dbConnect };
 
 export const db_mongoose_bolierplate_esm = () => {
   let dc_con = `
-import { mongoDB } from "../config/env_variables.js";
+import { mongoDB } from "../config/environment.${isTS?'ts':'js'}";
 import mongoose from "mongoose";
 
-export const dbConnect = async () => {
+const database = async () => {
   try {
     await mongoose.connect(mongoDB, {
       useNewUrlParser: true,
@@ -101,14 +97,16 @@ export const dbConnect = async () => {
     console.log(error);
     throw new Error("Error Conexion to DB");
   }
-};
+}
+
+export default database;
 `;
   return dc_con;
 };
 
 export const db_conexion_mongoose = () => {
   let dbAuth = `
-databaseConex() {
+  connectDatabase() {
     try {
       await dbConnect();
       console.log('Connection has been established successfully.');

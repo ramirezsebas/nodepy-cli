@@ -17,6 +17,7 @@ import {
   db_conexion_mongoose,
   db_conexion_sequelize,
   db_mongoose_bolierplate_commonjs,
+  db_mongoose_bolierplate_esm,
   db_seq_bolierplate_commonjs,
   db_seq_bolierplate_esm,
 } from "../helpers/boilerplate_db.js";
@@ -50,12 +51,12 @@ class NewCommand extends Command {
         type: "list",
         name: "typeProject",
         message: "What type will you be using?",
-        choices: ["commonjs", "esm"],
-        default: "commonjs",
+        choices: ["Commonjs", "ESM"],
+        default: "Commonjs",
       },
     ]);
 
-    return  projectTypeAnswer.typeProject;
+    return  projectTypeAnswer.typeProject.toLowerCase();
     
   }
 
@@ -158,10 +159,10 @@ class NewCommand extends Command {
           title: `Installing All the Dependencies for the Selected Database.(${this.database})`,
           task: () => this.installDatabaseDependencies(),
         },
-        // {
-        //   title: `Creating Conexion with Database.(${this.database})`,
-        //   task: () => this.createDatabaseConexion(),
-        // },
+        {
+          title: `Creating Conexion with Database.(${this.database})`,
+          task: () => this.createDatabaseConexion(),
+        },
       ];
 
       if (this.isGitRepository) {
@@ -266,60 +267,80 @@ class NewCommand extends Command {
   }
 
   createDatabaseConexion() {
-    //Go to database driver
-    let dbDriver = path.resolve(this.projectPath, "src/database");
+    //Accedemos a la ruta del archivo database.js
+    let dbDriver = path.resolve(this.projectPath, "src/config");
 
-    //Define the structure being used
-    let context = db_seq_bolierplate_commonjs();
-    if (this.projectType === "ESM") context = db_seq_bolierplate_esm();
+    //Definimos si es ESM o CommonJS
+    let context = '';
+    if(this.projectType === "esm"){
+      if(this.database === "Mongodb"){
+        context = db_mongoose_bolierplate_esm();
+      }else{
+        context = db_seq_bolierplate_esm();
+      }
+    }else{
+      if(this.database === "Mongodb"){
+        context = db_mongoose_bolierplate_commonjs();
+      }else{
+        context = db_seq_bolierplate_commonjs();
+      }
+    }
 
+
+    //Creamos el archivo de la base de datos
     this.createDBDriverFile(dbDriver, context);
 
-    try {
-      let db_con = db_conexion_sequelize();
-      if (this.database === "Mongodb") {
-        db_con = db_conexion_mongoose();
-        fs.appendFile(
-          path.resolve(this.projectPath, ".env"),
-          "\nMONGODB=",
-          (err) => {
-            if (err) errorHandle("Error", err);
-          }
-        );
-        let config = path.resolve(
-          this.projectPath,
-          "src/config/env_variables.js"
-        );
+    console.log(this);
+    //Definimos el bd
+    let dbContext='';
+    if(this.database === "Mongodb"){
+      dbContext = db_conexion_mongoose();
+      fs.appendFile(
+        path.resolve(this.projectPath, ".env"),
+        "\nMONGODB=",
+        (err) => {
+          if (err) errorHandle("Error", err);
+        }
+      );
+      let config = path.resolve(
+        this.projectPath,
+        `src/config/environment.${this.isTS?'ts':'js'}`
+      );
 
-        fileReplaceText(
-          config,
-          "};",
-          `
+      fileReplaceText(
+        config,
+        "};",
+        `
 mongoDb: process.env.MONGODB
 };
-                `
-        );
-      }
-
-      let serverPath = path.resolve(this.projectPath, "src", "server.js");
-      fileReplaceText(serverPath, "databaseConex() {}", db_con);
-    } catch (error) {
-      errorHandle(`Error Modifing file server.js}`, error);
+              `
+      );
+    }else{
+      dbContext = db_conexion_sequelize();
     }
+
+    
+    let serverPath = path.resolve(this.projectPath, "src/config", `server.${this.isTS?'ts':'js'}`);
+    if(this.isTS){
+      fileReplaceText(serverPath,"const database = ()=>{}",dbContext);
+      return;
+    }
+    fileReplaceText(serverPath, "connectDatabase(){}", dbContext);
+    
   }
 
   createDBDriverFile(dbDriver, context) {
     fs.writeFile(
-      path.resolve(dbDriver, "database_driver.js"),
+      path.resolve(dbDriver, `database.${this.isTS?'ts':'js'}`),
       context,
       (err) => {
         if (err)
           errorHandle(
-            `Could'nt create the Database Conexion in server.js`,
+            `Could'nt create the Database Conexion in server.${this.isTS?'ts':'js'}`,
             err
           );
         console.log(
-          `Successfully created the Database Conexion in server.js
+          `Successfully created the Database Conexion in server.${this.isTS?'ts':'js'}
   %s
           `,
           chalk.yellow.bold(

@@ -36,18 +36,33 @@ npm i -g @sebas369/nodepy
 
   - api
 
-    - routes
+    - app
 
-      - index.routes.js
+      - config
 
-    -controllers
+        - middlewares
+          - app.middleware.js
 
-  - models
-  - services
-    - factory.service.js
+        - routes
+          - app.route.js
+
+      - controllers
+        - app.controller.js
+
+      - models
+        - app.model.js
+
+      - services  
+        - app.service.js
+
+  - config
+    - database.js
+    - environment.js
+    - server.js
+  
+  - main.js
 
 - .gitignore
-- index.js
 - package.json
 - .env
 ```

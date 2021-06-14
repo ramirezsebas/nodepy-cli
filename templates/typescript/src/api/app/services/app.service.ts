@@ -1,7 +1,4 @@
-export interface Item {
-    id: number;
-    name: string;
-}
+import { Item } from "../interfaces/item";
 
 class AppService {
     private data: Item[];

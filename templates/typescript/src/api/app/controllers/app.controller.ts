@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import AppService, { Item } from '../services/app.service';
+import AppService from '../services/app.service';
+import { Item } from '../interfaces/item';
 
 class AppController {
 

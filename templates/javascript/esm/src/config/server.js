@@ -1,13 +1,16 @@
-const express = require('express');
-const http = require('http');
-const dotenv = require('dotenv');
-const environment = require('./environment.js');
+import express from 'express';
+import http from 'http';
+import dotenv from 'dotenv';
+import environment from './environment.js';
+import database from "./database.js";
 
 class Server{
     constructor(){
         dotenv.config();
 
         this.app = express();
+
+        this.connectDatabase();
 
         this.configServer();
 
@@ -18,6 +21,8 @@ class Server{
          */
         // this.createHttpsServer();
     }
+
+    connectDatabase(){}
 
     configServer(){
         const { host, port } = environment;
@@ -35,7 +40,7 @@ class Server{
 
     createHttpsServer(){
 
-        const { key, cred } = environment;
+        const { sslKey:key, sslCredentials:cred } = environment;
         
         const httpsServer = https.createServer(this.app,{
             key,
@@ -51,4 +56,4 @@ class Server{
     }
 }
 
-module.exports = Server;
+export default Server;
