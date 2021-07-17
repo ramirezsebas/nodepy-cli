@@ -2,7 +2,7 @@ import yargs from "yargs";
 
 export const yargsArguments = yargs
   .usage("Usage: $0 <command> [options]")
-  .command("new", "Inicializa un nuevo proyecto")
-  .example("$0 new project1", "Se ha creado un nuevo proyecto")
+  .command("new", "Initialize a New Project")
+  .example("$0 new project1", "Create a New Project")
   .help("h")
   .alias("h", "help").argv;

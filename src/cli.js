@@ -9,13 +9,14 @@ export const cli = () => {
     let userInput = yargsArguments._;
 
     const command = userInput[0];
-    if (!isValidCommand(command)) {
+    if (command && !isValidCommand(command)) {
         console.log(
             `%s`,
             chalk.red.bold(
                 `The Command ("${command}") is Invalid. For a List of available options run nodepy -h`
             )
         );
+        return;
     }
 
 
@@ -40,8 +41,8 @@ export const cli = () => {
 
     console.log(
         `%s`,
-        chalk.red.bold(
-            `The Command ("${command}") is Invalid. For a List of available options run nodepy -h`
+        chalk.yellow.bold(
+            `Please Insert a Command. For a List of available options run nodepy -h`
         )
     );
 }

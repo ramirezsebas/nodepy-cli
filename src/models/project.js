@@ -7,10 +7,6 @@ export const Project = () => {
         return state;
     }
 
-    const initializeGit = () => {
-        console.log('Initializing Git');
-    }
-
     const setProjectName = (projectName) => {
         state['projectName'] = projectName;
     }
@@ -49,7 +45,7 @@ export const Project = () => {
         //     "../../../templates/javascript",
         //     state['projectType']
         // );
-        
+
         //If it has problems with windows
         state["templatePath"] = path.join(
             process.platform === "win32"
@@ -72,10 +68,13 @@ export const Project = () => {
         return state['database'];
     }
 
+    const getPackageJsonPath = () => {
+        return `${state['projectPath']}/package.json`;
+    }
+
 
     return {
         getState,
-        initializeGit,
         setProjectName,
         getProjectName,
         setProjectPath,
@@ -87,7 +86,8 @@ export const Project = () => {
         setTemplatePath,
         getTemplatePath,
         setDatabase,
-        getDatabase
+        getDatabase,
+        getPackageJsonPath
     }
 }
 
