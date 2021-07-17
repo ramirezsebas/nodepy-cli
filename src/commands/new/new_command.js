@@ -77,12 +77,14 @@ async function createProject(project) {
           - Git Repository Initialized: ${project.getIsGitInit()}
         %s
         %s
+        %s
         cd ${project.getProjectName()}
         npm run dev
         `,
         chalk.green.bold("DONE: "),
         chalk.green.bold("Na'ape nde Proyecto"),
         chalk.green.bold("Happy Coding!"),
+        chalk.yellow.bold("REMEMBER TO ADD .env FILE FOR CONNECTING DATABASE!")
     );
 
 }
@@ -205,28 +207,26 @@ async function tasksHandler(project) {
                 let databaseFile = path.resolve(project.getProjectPath(), "src/config/database.config.js");
                 let db = project.getDatabase().toLowerCase();
 
-                if (project.getProjectType().toLowerCase() === "esm") {
-                    fileReplaceText(databaseFile, '// import mongoose from "mongoose";', "");
+                if (project.getProjectType().toLowerCase() === "commonjs") {
+                    fileReplaceText(databaseFile, '// const mongoose = require("mongoose");', " ");
                 } else {
-                    fileReplaceText(databaseFile, '// const mongoose = require("mongoose");', "");
+                    fileReplaceText(databaseFile, '// import mongoose from "mongoose";', " ");
                 }
 
-                console.log(project.getState());
                 if (db !== "postgres") {
-                    if (db = "sql server") {
+                    if (db === "sql server") {
                         fileReplaceText(databaseFile, "postgres", "mssql");
                         return;
                     }
                     fileReplaceText(databaseFile, "postgres", db);
                 }
-                console.log("REMEMBER TO ADD .env FILE FOR CONNECTING DATABASE!")
+                
 
 
 
             }
         },
     ];
-    console.log(project.getIsGitInit());
     if (project.getIsGitInit()) {
         taskObjs.push({
             title: `Initializing a Git Repository`,
