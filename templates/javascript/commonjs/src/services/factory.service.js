@@ -4,16 +4,12 @@ class FactoryService {
     return FactoryService.instance;
   }
 
-  create(tipo) {
-    switch (tipo) {
+  static create(serviceType) {
+    switch (serviceType) {
       default:
         break;
     }
   }
 }
 
-const factoryService = new FactoryService();
-
-Object.freeze(factoryService);
-
-module.exports = factoryService;
+module.exports = FactoryService;

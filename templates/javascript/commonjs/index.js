@@ -1,3 +1,10 @@
-const server = require("./src/server");
+const Server = require("./src/config/server.config");
 
-server.createHttpServer();
+(()=>{
+    const server = new Server();
+    //Remote Server
+    // server.createHttpsServer();
+    
+    //Local Server
+    server.createHttpServer();
+})();
