@@ -1,16 +1,16 @@
-const Server = require("./src/config/server.config");
-const dotenv = require("dotenv");
+import Server from './config/server.config.js';
+import dotenv from 'dotenv';
 
 (()=>{
-
+    
     setEnvironmentVariables();
     
     const server = new Server();
     //Remote Server
-    // server.createHttpsServer();
+    server.createHttpsServer();
     
     //Local Server
-    server.createHttpServer();
+    // server.createHttpServer();
 })();
 
 function setEnvironmentVariables() {
