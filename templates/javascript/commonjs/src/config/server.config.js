@@ -4,12 +4,15 @@ const path = require("path");
 const http = require("http");
 const https = require("https");
 
+const Database = require("./database.config.js");
 const environments = require("./environments.config.js");
 
 class Server {
   constructor() {
     this.port = environments.port;
     this.app = express();
+    //TODO: Create .env, then uncomment to establish a conexion with your Database.
+    // Database.connectDatabase();
     this.generateMiddleware();
     this.generateRoutes();
   }
