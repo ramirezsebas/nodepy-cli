@@ -1,6 +1,6 @@
 {
   "name": "@sebas369/nodepy",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "CLI para Node JS",
   "main": "src/index.js",
   "bin": {
@@ -16,6 +16,9 @@
   ],
   "author": {
     "name": "Matias Ramirez"
+  },
+  "publishConfig": {
+    "@sebas369:registry": "https://npm.pkg.github.com"
   },
   "homepage": "https://github.com/ramirez-sebas1010/nodepy-cli#readme",
   "repository": {
