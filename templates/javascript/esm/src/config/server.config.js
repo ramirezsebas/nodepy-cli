@@ -2,6 +2,7 @@ import express from 'express';
 import path from "path";
 import http from 'http';
 import https from "https";
+import cors from "cors";
 
 import { Environments } from './environment.config.js';
 

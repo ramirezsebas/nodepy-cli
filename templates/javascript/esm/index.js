@@ -1,4 +1,4 @@
-import Server from './config/server.config.js';
+import Server from './src/config/server.config.js';
 import dotenv from 'dotenv';
 
 (()=>{
@@ -7,10 +7,10 @@ import dotenv from 'dotenv';
     
     const server = new Server();
     //Remote Server
-    server.createHttpsServer();
+    // server.createHttpsServer();
     
     //Local Server
-    // server.createHttpServer();
+    server.createHttpServer();
 })();
 
 function setEnvironmentVariables() {
