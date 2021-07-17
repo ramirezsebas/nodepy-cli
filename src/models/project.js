@@ -46,7 +46,7 @@ export const Project = () => {
     const setTemplatePath = () => {
         state["templatePath"] = path.join(
             new URL(import.meta.url).pathname,
-            "../../templates/javascript",
+            "../../../templates/javascript",
             state['projectType']
         );
         

@@ -60,8 +60,12 @@ async function createProject(project) {
         console.error("Error Creating Database", error);
     }
 
+    try {
 
-    await tasksHandler(project);
+        await tasksHandler(project);
+    } catch (error) {
+        console.error("Error Project", error);
+    }
 
     //Confirm the creation of a New Project
     console.log(
@@ -140,63 +144,91 @@ async function selectDatabase(project) {
 }
 
 async function tasksHandler(project) {
-    try {
-        let taskObjs = [
-            {
-                title: `Creating Structure for ${project.getProjectName()}`,
-                task: () => copyFile(project.getProjectPath(), project.getTemplatePath()),
-            },
-            {
-                title: "Renaming Project in Package.json",
-                task: () => {
+
+    let taskObjs = [
+        {
+            title: `Creating Structure for ${project.getProjectName()}`,
+            task: async () => {
+                try {
+                    await copyFile(project.getProjectPath(), project.getTemplatePath());
+                } catch (error) {
+                    throw new Error(`Error Creating Structure for ${project.getProjectName()}: \n error`);
+                }
+            }
+        },
+        {
+            title: "Renaming Project in Package.json",
+            task: async () => {
+                try {
                     //Rename Package.json -> name with project name
                     let pkgJsonPath = path.resolve(project.getProjectPath(), "package.json");
-                    fileReplaceText(pkgJsonPath, "my-node-project", project.getProjectName());
-                },
+                    await fileReplaceText(pkgJsonPath, "my-node-project", project.getProjectName());
+                    
+                } catch (error) {
+                    throw new Error(`Error Renaming Project in Package.json: \n ${error}`)
+                }
+
             },
-            {
-                title: "Installing all the General Dependencies.",
-                task: () =>
-                    projectInstall({
+        },
+        {
+            title: "Installing all the General Dependencies.",
+            task: async () => {
+                try {
+                    await projectInstall({
                         cwd: project.getProjectPath(),
-                    }),
+                    });
+                } catch (error) {
+                   throw new Error(`Installing all the General Dependencies: \n ${error}`); 
+                }
+            }
+
+        },
+        {
+            title: `Installing All the Dependencies for the Selected Database.(${project.getDatabase()})`,
+            task: async () => {
+                try {
+                    await installDatabaseDependencies(project);
+                } catch (error) {
+                    throw new Error(`Error Installing All the Dependencies for the Selected Database.(${project.getDatabase()}) \n ${error}`);
+                }
+            }
+        },
+        // {
+        //     title: `Creating Conexion with Database.(${project.database})`,
+        //     task: () => project.createDatabaseConexion(),
+        // },
+    ];
+
+    if (project.getIsGitInit()) {
+        taskObjs.push({
+            title: `Initializing a Git Repository`,
+            task: async () => {
+                try {
+                    await project.getIsGitInit()
+                } catch (error) {
+                    throw new Error(`Error Initializing a Git Repository: \n ${error}`);
+                }
+
             },
-            {
-                title: `Installing All the Dependencies for the Selected Database.(${project.getDatabase()})`,
-                task: () => installDatabaseDependencies(),
-            },
-            // {
-            //     title: `Creating Conexion with Database.(${project.database})`,
-            //     task: () => project.createDatabaseConexion(),
-            // },
-        ];
-
-        if (project.getIsGitInit()) {
-            taskObjs.push({
-                title: `Initializing a Git Repository`,
-                task: () => project.getIsGitInit(),
-            });
-        }
-
-        const tasks = new Listr(taskObjs);
-
-        await tasks.run();
-    } catch (error) {
-
-        console.error(`Could'nt create the project`, error);
+        });
     }
+
+    const tasks = new Listr(taskObjs);
+
+    await tasks.run();
+
 }
 
-async function installDatabaseDependencies() {
+async function installDatabaseDependencies(project) {
     const dbDependencies = {
         sequelize: "^6.6.2",
     };
     const option = {
-        cwd: project.projectPath,
+        cwd: project.getProjectPath(),
     };
     try {
         let dependency = null;
-        switch (project.database.toLowerCase()) {
+        switch (project.getDatabase().toLowerCase()) {
             case "postgres":
                 dependency = await install(
                     {
