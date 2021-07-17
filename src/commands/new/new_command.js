@@ -2,6 +2,7 @@ import inquirer from "inquirer";
 import chalk from "chalk";
 import path from "path";
 import Listr from "listr";
+import execa from "execa";
 import { projectInstall, install } from "pkg-install";
 
 import {
@@ -203,9 +204,14 @@ async function tasksHandler(project) {
                 }
                 let databaseFile = path.resolve(project.getProjectPath(), "src/config/database.config.js");
                 let db = project.getDatabase().toLowerCase();
-                fileReplaceText(databaseFile, 'const mongoose = require("mongoose");', "");
 
+                if (project.getProjectType().toLowerCase() === "esm") {
+                    fileReplaceText(databaseFile, '// import mongoose from "mongoose";', "");
+                } else {
+                    fileReplaceText(databaseFile, '// const mongoose = require("mongoose");', "");
+                }
 
+                console.log(project.getState());
                 if (db !== "postgres") {
                     if (db = "sql server") {
                         fileReplaceText(databaseFile, "postgres", "mssql");
@@ -220,13 +226,13 @@ async function tasksHandler(project) {
             }
         },
     ];
-
+    console.log(project.getIsGitInit());
     if (project.getIsGitInit()) {
         taskObjs.push({
             title: `Initializing a Git Repository`,
             task: async () => {
                 try {
-                    await project.getIsGitInit()
+                    await gitInitCommand(project);
                 } catch (error) {
                     throw new Error(`Error Initializing a Git Repository: \n ${error}`);
                 }
@@ -368,3 +374,14 @@ function addMongoDbEnvironmentVariable(project) {
         addMongoLine);
 }
 
+async function gitInitCommand(project) {
+    try {
+      const { stdout } = await execa(`git`, ["init"], {
+        preferLocal: true,
+        cwd: project.getProjectPath(),
+      });
+      console.log(stdout);
+    } catch (error) {
+      console.error("Error while trying to initialize with Git", error);
+    }
+  }
