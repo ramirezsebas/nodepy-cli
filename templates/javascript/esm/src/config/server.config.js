@@ -5,7 +5,7 @@ import https from "https";
 import cors from "cors";
 
 import { Environments } from './environment.config.js';
-import Database from '../../../commonjs/src/config/database.config.js';
+import Database from './database.config.js';
 
 class Server {
   constructor() {
