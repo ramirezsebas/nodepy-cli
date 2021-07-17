@@ -1,94 +1,45 @@
-import inquirer from "inquirer";
 import chalk from "chalk";
-import { yargsArguments } from "./config/yargs_config.js";
-import path from "path";
-
-import { errorHandle } from "./helpers/error_handle.js";
-import NewCommand from "./commands/new_command.js";
-
-export const cli = async () => {
-  //Obtenemos los comandos
-  let commands = yargsArguments._;
-
-  //Guardar el path
-  let currentPath = process.cwd();
+import { yargsArguments } from "./configs/yargs_config.js";
 
 
-  let newCommand = new NewCommand();
+export const cli = () => {
+  //Obtener la entrada del usuario
+  let userInput = yargsArguments._;
 
-  console.log(commands);
-  //If no commands were used
-  if (noArguments(commands)) {
-    console.log(
-      `%s
-    - %s : Initialize a New Project in the Current Directory
-    - %s : Add a new Schema
-        - %s Creates a New Model in the models directory
-    `,
-      chalk.green.bold("Available Commands:"),
-      chalk.green.bold("new (n)")
-    );
-    return;
+  const command = userInput[0];
+  if (!isValidCommand(command)) {
+      console.log(
+          `%s`,
+          chalk.red.bold(
+              `The Command ("${command}") is Invalid. For a List of available options run nodepy -h`
+          )
+      );
   }
 
-  try {
-    //New Command
-    if (commands[0] === "new" || commands[0] === "n") {
-      let projectName = commands[1];
 
-      //If project name isn't provided
-      if (!commands[1]) {
-        projectName = await inquirer.prompt([
-          {
-            type: "input",
-            message: "What would be the name of your workspace and project?",
-            name: "project",
-          },
-        ]);
-        projectName = projectName.project;
-      }
+  //Crear un Nuevo Proyecto
+  const newProject = Project();
 
-      newCommand.projectName = projectName;
-      newCommand.projectPath = path.resolve(currentPath, projectName);
-      await newCommand.createProject();
+  //Verify if Project already exists
+
+
+  //New Command
+  if (command === "new" || command === "n") {
+      const inputProjectName = userInput[1];
+      newProject.setProjectName(inputProjectName);
+      newCommand(newProject)
       return;
-    }
+  }
 
-    // if (commands[0] === "add" || commands[0] === "a") {
-    //   if (commands[1] === "model" || commands[1] === "m") {
-    //     let modelInput = commands[2];
-    //     if (!modelInput) {
-    //       modelInput = await inquirer.prompt({
-    //         type: "input",
-    //         message: "What do you want to call your model?",
-    //         name: "model",
-    //       });
-    //       modelInput = modelInput.model;
-    //     }
-    //     // "type": "commonjs"
-    //     // "type": "module"
+  //Add Command
+  if (command === "add" || command === "a") {
 
-    //     // add_model_command(
-    //     //   currentPath,
-    //     //   modelInput,
-    //     //   newCommand.projectType,
-    //     //   newCommand.database === "Mongodb"
-    //     // );
-    //     return;
-    //   }
-    // }
+  }
 
-    console.log(
+  console.log(
       `%s`,
       chalk.red.bold(
-        `The Command ("${commands[0]}") is Invalid. For a List of available options run nodepy -h`
+          `The Command ("${command}") is Invalid. For a List of available options run nodepy -h`
       )
-    );
-  } catch (error) {
-    errorHandle(error);
-  }
-};
-
-const noArguments = (commands) => {
-  return commands.length <= 0;
-};
+  );
+}

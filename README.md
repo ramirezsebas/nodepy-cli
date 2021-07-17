@@ -32,17 +32,23 @@ npm i -g @sebas369/nodepy
 ```bash
 - public
   - index.html
+
 - src
-
   - api
-
-    - routes
-
-      - index.routes.js
-
-    -controllers
+    - app
+      - routes
+      - controllers
+      - middleware
 
   - models
+
+  - middleware //Global Middleware
+
+  - config //Project Config
+    - server.config.js
+    - database.config.js
+    - environments.config.js
+
   - services
     - factory.service.js
 
