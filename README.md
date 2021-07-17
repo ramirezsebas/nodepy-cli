@@ -30,30 +30,32 @@ npm i -g @sebas369/nodepy
 ## Estructura de un Proyecto - Project Structure
 
 ```bash
-- public
+- public //Static Files of the API
   - index.html
 
 - src
-  - api
-    - app
+  - index.js //Entry file
+  - api 
+    - app //App Module that contains its routers, models, controllers and services. 
       - routes
       - controllers
       - middleware
+      - models
+      - services
+        
+  -base //Base folder that has base classes
+    - factory.service.js
+  
+  - shared //Folder that shares files
+    - middleware
 
-  - models
-
-  - middleware //Global Middleware
-
-  - config //Project Config
+  - config //Project Configuration
     - server.config.js
     - database.config.js
     - environments.config.js
 
-  - services
-    - factory.service.js
-
 - .gitignore
-- index.js
+
 - package.json
 - .env
 ```
