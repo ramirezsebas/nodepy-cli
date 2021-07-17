@@ -1,3 +1,5 @@
 import { cli } from "./cli.js";
 
-export const main = async () => cli();
+export const main = async () =>{
+    cli();
+}
