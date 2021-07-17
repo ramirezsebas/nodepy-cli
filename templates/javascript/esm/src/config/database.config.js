@@ -1,5 +1,5 @@
 import Sequelize from "sequelize";
-const mongoose = require("mongoose");
+// import mongoose from "mongoose";
 
 import environments from './environment.config.js';
 export class Database {

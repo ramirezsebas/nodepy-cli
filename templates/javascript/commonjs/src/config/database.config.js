@@ -1,5 +1,5 @@
 const { Sequelize } = require('sequelize');
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
 
 const environments = require("./environments.config.js");
 class Database {
