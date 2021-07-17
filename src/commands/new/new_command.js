@@ -163,7 +163,7 @@ async function tasksHandler(project) {
                     //Rename Package.json -> name with project name
                     let pkgJsonPath = path.resolve(project.getProjectPath(), "package.json");
                     await fileReplaceText(pkgJsonPath, "my-node-project", project.getProjectName());
-                    
+
                 } catch (error) {
                     throw new Error(`Error Renaming Project in Package.json: \n ${error}`)
                 }
@@ -178,7 +178,7 @@ async function tasksHandler(project) {
                         cwd: project.getProjectPath(),
                     });
                 } catch (error) {
-                   throw new Error(`Installing all the General Dependencies: \n ${error}`); 
+                    throw new Error(`Installing all the General Dependencies: \n ${error}`);
                 }
             }
 
@@ -193,10 +193,32 @@ async function tasksHandler(project) {
                 }
             }
         },
-        // {
-        //     title: `Creating Conexion with Database.(${project.database})`,
-        //     task: () => project.createDatabaseConexion(),
-        // },
+        {
+            title: `Creating Conexion with Database.(${project.getDatabase()})`,
+            task: async () => {
+
+                if (project.getDatabase().toLowerCase() === "mongodb") {
+                    changeToMoongoseDatabase(project);
+                    return;
+                }
+                let databaseFile = path.resolve(project.getProjectPath(), "src/config/database.config.js");
+                let db = project.getDatabase().toLowerCase();
+                fileReplaceText(databaseFile, 'const mongoose = require("mongoose");', "");
+
+
+                if (db !== "postgres") {
+                    if (db = "sql server") {
+                        fileReplaceText(databaseFile, "postgres", "mssql");
+                        return;
+                    }
+                    fileReplaceText(databaseFile, "postgres", db);
+                }
+                console.log("REMEMBER TO ADD .env FILE FOR CONNECTING DATABASE!")
+
+
+
+            }
+        },
     ];
 
     if (project.getIsGitInit()) {
@@ -303,3 +325,46 @@ async function installDatabaseDependencies(project) {
         errorHandle(`Could'nt install Database Dependency `, error);
     }
 }
+
+function changeToMoongoseDatabase(project) {
+    let moongooseConnection = `await mongoose.connect(environments.mongoDb, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            useCreateIndex: true,
+            useFindAndModify: false,
+          });`;
+
+    let databaseFile = path.resolve(this.projectPath, "src/config/database.config.js");
+
+    fileReplaceText(databaseFile, "await Database.sequelize.authenticate();", moongooseConnection);
+    fileReplaceText(databaseFile, `    static sequelize = new Sequelize(environments.databaseName, environments.databaseUser, environments.databasePassword, {
+            host: environments.host,
+            dialect: "postgres",
+        });
+         `, "")
+    fileReplaceText(databaseFile, `const { Sequelize } = require('sequelize');`, "");
+    addMongoDbEnvironmentVariable(project);
+}
+
+function addMongoDbEnvironmentVariable(project) {
+    let config = path.resolve(
+        project.getProjectPath(),
+        "src/config/environments.config.js"
+    );
+
+    let finalLine = "};";
+    let addMongoLine = "mongoDb: process.env.MONGODB\n};"
+
+    //     fileReplaceText(
+    //         config,
+    //         "};",
+    //         `
+    // mongoDb: process.env.MONGODB
+    // };              `
+    //     );
+    fileReplaceText(
+        config,
+        finalLine,
+        addMongoLine);
+}
+

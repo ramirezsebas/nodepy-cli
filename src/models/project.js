@@ -44,20 +44,20 @@ export const Project = () => {
     }
 
     const setTemplatePath = () => {
-        state["templatePath"] = path.join(
-            new URL(import.meta.url).pathname,
-            "../../../templates/javascript",
-            state['projectType']
-        );
-        
-        //If it has problems with windows
         // state["templatePath"] = path.join(
-        //     process.platform === "win32"
-        //         ? new URL(import.meta.url).pathname.substring(1)
-        //         : new URL(import.meta.url).pathname,
+        //     new URL(import.meta.url).pathname,
         //     "../../../templates/javascript",
         //     state['projectType']
         // );
+        
+        //If it has problems with windows
+        state["templatePath"] = path.join(
+            process.platform === "win32"
+                ? new URL(import.meta.url).pathname.substring(1)
+                : new URL(import.meta.url).pathname,
+            "../../../templates/javascript",
+            state['projectType']
+        );
     }
 
     const getTemplatePath = () => {
