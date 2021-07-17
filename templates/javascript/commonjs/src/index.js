@@ -1,4 +1,4 @@
-const Server = require("./src/config/server.config.js");
+const Server = require("./config/server.config.js");
 const dotenv = require("dotenv");
 
 (()=>{

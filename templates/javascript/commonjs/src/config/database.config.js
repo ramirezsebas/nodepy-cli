@@ -1,12 +1,14 @@
 const { Sequelize } = require('sequelize');
+const mongoose = require("mongoose");
+
 const environments = require("./environments.config.js");
 class Database {
     static sequelize = new Sequelize(environments.databaseName, environments.databaseUser, environments.databasePassword, {
         host: environments.host,
         dialect: "postgres",
     });
-    
-    static connectDatabase() {
+     
+    static async connectDatabase() {
         try {
             await Database.sequelize.authenticate();
             console.log('Connection has been established successfully.');

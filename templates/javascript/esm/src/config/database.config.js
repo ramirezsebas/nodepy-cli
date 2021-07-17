@@ -1,4 +1,5 @@
 import Sequelize from "sequelize";
+const mongoose = require("mongoose");
 
 import environments from './environment.config.js';
 export class Database {
@@ -6,7 +7,7 @@ export class Database {
         host: environments.host,
         dialect: "postgres",
     });
-    static connectDatabase() {
+    static async connectDatabase() {
         try {
             await Database.sequelize.authenticate();
             console.log('Connection has been established successfully.');

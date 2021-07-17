@@ -1,4 +1,4 @@
-import Server from './src/config/server.config.js';
+import Server from './config/server.config.js';
 import dotenv from 'dotenv';
 
 (()=>{
