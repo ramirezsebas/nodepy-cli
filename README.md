@@ -1,4 +1,4 @@
-# Node JS CLI
+# Node JS CLI - https://www.npmjs.com/package/@sebas369/nodepy
 
 CLI that generates the structure of a Node JS project with Express(Boilerplate code).
 
