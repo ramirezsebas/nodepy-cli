@@ -28,11 +28,10 @@ async function createProject(project) {
         }
     }
 
-    //Directorio del Proyecto
+    //Project Directory
     project.setProjectPath(path.resolve(process.cwd(), project.getProjectName()));
 
 
-    //Inicializar GIT
     try {
         await initializeGit(project);
     } catch (error) {
@@ -62,7 +61,6 @@ async function createProject(project) {
     }
 
     try {
-
         await tasksHandler(project);
     } catch (error) {
         console.error("Error Project", error);
@@ -220,7 +218,7 @@ async function tasksHandler(project) {
                     }
                     fileReplaceText(databaseFile, "postgres", db);
                 }
-                
+
 
 
 
@@ -376,12 +374,12 @@ function addMongoDbEnvironmentVariable(project) {
 
 async function gitInitCommand(project) {
     try {
-      const { stdout } = await execa(`git`, ["init"], {
-        preferLocal: true,
-        cwd: project.getProjectPath(),
-      });
-      console.log(stdout);
+        const { stdout } = await execa(`git`, ["init"], {
+            preferLocal: true,
+            cwd: project.getProjectPath(),
+        });
+        console.log(stdout);
     } catch (error) {
-      console.error("Error while trying to initialize with Git", error);
+        console.error("Error while trying to initialize with Git", error);
     }
-  }
+}

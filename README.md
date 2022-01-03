@@ -1,5 +1,7 @@
 # Node JS CLI
 
+Hope you find this CLI useful, leave your issues.
+
 CLI that generates the structure of a Node JS project with Express(Boilerplate code).
 
 Initialize a Git Repository for your Project.
@@ -63,7 +65,6 @@ npm i -g @sebas369/nodepy
 ## Comandos - Commands
 
 ```bash
-    //Para Inicializar un Proyecto Nuevo en el Directorio Actual.
     //To Initialize a new Project in the Current Directory
 
     nodepy new projectName or nodepy n projectName
