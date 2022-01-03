@@ -4,12 +4,12 @@ import http from 'http';
 import https from "https";
 import cors from "cors";
 
-import { Environments } from './environment.config.js';
-import Database from './database.config.js';
+import { environments } from './environment.config.js';
+import { Database } from './database.config.js';
 
 class Server {
   constructor() {
-    this.port = Environments.port;
+    this.port = environments.port;
     this.app = express();
     //TODO: Create .env, then uncomment to establish a conexion with your Database.
     // Database.connectDatabase()
@@ -30,7 +30,7 @@ class Server {
 
   generateRoutes() {
     //Test Route
-    this.app.get("/test", (req, res) => {
+    this.app.get("/", (req, res) => {
       return res.status(200).json({
         mensaje: "API Working Fine",
       });
@@ -40,13 +40,13 @@ class Server {
   createHttpServer() {
     let httpServer = http.createServer(this.app);
     httpServer.listen(this.port, () => {
-      console.log(`Server running on http://localhost:${this.port}\nTest API: http://localhost:${this.port}/test`);
+      console.log(`Server running on http://localhost:${this.port}`);
     });
   }
 
   createHttpsServer() {
-    let privateKey = fs.readFileSync(process.env.RUTA_CLAVE);
-    let certificate = fs.readFileSync(process.env.RUTA_CREEDENCIAL);
+    let privateKey = fs.readFileSync(environments.sslPathKey);
+    let certificate = fs.readFileSync(environments.sslPathCredentials);
 
     let creedenciales = { key: privateKey, cert: certificate };
     let httpsServer = https.createServer(creedenciales, this.app);
