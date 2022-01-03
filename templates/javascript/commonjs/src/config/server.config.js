@@ -10,6 +10,7 @@ const environments = require("./environments.config.js");
 class Server {
   constructor() {
     this.port = environments.port;
+    this.host = environments.host;
     this.app = express();
     //TODO: Create .env, then uncomment to establish a conexion with your Database.
     // Database.connectDatabase();
@@ -30,7 +31,7 @@ class Server {
 
   generateRoutes() {
     //Test Route
-    this.app.get("/test", (req, res) => {
+    this.app.get("/", (req, res) => {
       return res.status(200).json({
         mensaje: "API Working Fine",
       });
@@ -40,13 +41,13 @@ class Server {
   createHttpServer() {
     let httpServer = http.createServer(this.app);
     httpServer.listen(this.port, () => {
-      console.log(`Server running on http://localhost:${this.port}`);
+      console.log(`Server running on http://${this.host}:${this.port}`);
     });
   }
 
   createHttpsServer() {
-    let privateKey = fs.readFileSync(process.env.RUTA_CLAVE);
-    let certificate = fs.readFileSync(process.env.RUTA_CREEDENCIAL);
+    let privateKey = fs.readFileSync(environments.sslPathKey);
+    let certificate = fs.readFileSync(environments.sslPathCredentials);
 
     let creedenciales = { key: privateKey, cert: certificate };
     let httpsServer = https.createServer(creedenciales, this.app);
