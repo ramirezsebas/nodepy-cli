@@ -1,7 +1,7 @@
 import Sequelize from "sequelize";
 // import mongoose from "mongoose";
 
-import environments from './environment.config.js';
+import { environments } from './environment.config.js';
 export class Database {
     static sequelize = new Sequelize(environments.databaseName, environments.databaseUser, environments.databasePassword, {
         host: environments.host,

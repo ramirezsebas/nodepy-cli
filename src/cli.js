@@ -5,7 +5,7 @@ import { Project } from "./models/project.js";
 import { newCommand } from "./commands/new/new_command.js";
 
 export const cli = () => {
-    //Obtener la entrada del usuario
+    //Get User Input
     let userInput = yargsArguments._;
 
     const command = userInput[0];
@@ -20,13 +20,13 @@ export const cli = () => {
     }
 
 
-    //Crear un Nuevo Proyecto
+    //Create a New Project
     const newProject = Project();
 
-    //Verify if Project already exists
+    //TODO:Verify if Project already exists
 
 
-    //New Command
+    //New Command - Create a new project
     if (command === "new" || command === "n") {
         const inputProjectName = userInput[1];
         newProject.setProjectName(inputProjectName);
@@ -34,7 +34,7 @@ export const cli = () => {
         return;
     }
 
-    //Add Command
+    //TODO:Add Command
     if (command === "add" || command === "a") {
 
     }
